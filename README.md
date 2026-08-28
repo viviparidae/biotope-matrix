@@ -9,6 +9,28 @@
 | [要求仕様書](docs/requirements.md) | ユーザーストーリー、Gherkin形式の機能要求、品質シナリオ、受け入れ方針 |
 | [アーキテクチャ設計書](docs/architecture.md) | C4 Model、Mermaid図、ECS設計、Kubernetes構成、ADR |
 
+## 実行方法
+
+Node.js と npm を用意したうえで、リポジトリのルートで依存関係をインストールします。
+
+```bash
+npm install
+```
+
+開発サーバーを起動します。
+
+```bash
+npm run dev
+```
+
+表示された URL（通常は `http://localhost:5173`）をブラウザで開いてください。
+
+本番用ビルドを作成する場合は、次を実行します。TypeScript の型チェック後、`dist/` にビルド成果物が生成されます。
+
+```bash
+npm run build
+```
+
 ## プロダクト概要
 
 観察者が、数ピクセルの生物・地形・災害・環境音が自律的に連鎖する生態系を、操作なしで眺めて楽しむシミュレーションです。シミュレーションの正本はWorker Pod、描画と音声再生はブラウザが担当します。
