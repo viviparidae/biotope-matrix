@@ -1,0 +1,9 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: pythagora-bios-worker
+spec:
+  scaleTargetRef:
+    name: pythagora-bios-worker
+  minReplicaCount: 1
+  maxReplicaCount: 3

@@ -1,14 +1,27 @@
 {
-  "name": "biotope-matrix-poc",
+  "name": "pythagora-bios",
   "private": true,
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc --noEmit && vite build"
+    "dev": "concurrently -k \"npm:worker:dev\" \"vite --config apps/frontend/vite.config.ts\"",
+    "worker:dev": "tsx apps/worker/src/index.ts",
+    "build": "tsc --noEmit && vite build --config apps/frontend/vite.config.ts",
+    "test": "vitest run tests/unit tests/integration tests/acceptance",
+    "e2e": "playwright test"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
+    "@types/node": "^26.4.0",
+    "@types/ws": "^8.18.1",
+    "@vitest/coverage-v8": "^2.1.9",
+    "tsx": "^4.23.12",
     "typescript": "^5.7.0",
-    "vite": "^6.0.0"
+    "vite": "^6.0.0",
+    "vitest": "^2.1.8"
+  },
+  "dependencies": {
+    "concurrently": "^10.0.5",
+    "ws": "^8.21.3"
   }
 }

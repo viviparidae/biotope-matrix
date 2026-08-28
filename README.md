@@ -52,4 +52,14 @@ npm run build
 2. [アーキテクチャ設計書](docs/architecture.md)で要求を実現する境界とデータフローを確認する。
 3. 実装時は要求ID（`F-*` / `NFR-*`）とADR番号をテストや変更に紐付ける。
 
-現時点では仕様・設計段階です。未指定の災害閾値、湿度閾値、分解者密度などは実装前に設定値として合意します。
+## ディレクトリ構成
+
+- `apps/frontend`: Canvas、UI、Web Audio API を担当するブラウザアプリケーション
+- `apps/worker`: シミュレーション Worker の実行入口
+- `packages/ecs`: Entity、Component、Query、System の共有実装
+- `packages/shared-types`: API、ECS、イベントの共有型
+- `packages/config`: ESLint と TypeScript の共有設定
+- `infra`: Kubernetes、KEDA、CRD のマニフェスト
+- `tests`: unit、integration、performance テスト
+
+シミュレーションの正本は Worker 側へ集約し、フロントエンドは描画と音響を担当します。現時点では仕様・設計段階のため、未指定の災害閾値、湿度閾値、分解者密度などは設定値として後続実装で合意します。

@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pythagora-bios-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pythagora-bios-frontend
+  template:
+    metadata:
+      labels:
+        app: pythagora-bios-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: pythagora-bios/frontend:latest
+          ports:
+            - containerPort: 80
