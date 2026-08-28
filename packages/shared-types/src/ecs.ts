@@ -34,12 +34,25 @@ export const CARNIVORE_REPLENISH_HERBIVORE_THRESHOLD = 30;
 export const HERBIVORE_BREEDING_THRESHOLD = 50;
 export const POPULATION_METEOR_THRESHOLD = 115;
 export const FLOOD_WETLAND_THRESHOLD = 30;
+export const MIN_BODY_SIZE = 0.5;
+export const MAX_BODY_SIZE = 3;
+export const PREDATION_SIZE_RATIO = 0.8;
+export const STARVATION_ENERGY_THRESHOLD = 20;
+export const SHAPE_ATTACK_FACTOR = 1.15;
+export const SHAPE_DEFENSE_FACTOR = 1.25;
 
 export const enum Species {
   None = 0,
   Grass = 1,
   Herbivore = 2,
   Carnivore = 3,
+}
+
+export const enum BodyShape {
+  Standard = 0,
+  Spiky = 1,
+  Armored = 2,
+  Streamlined = 3,
 }
 
 export const enum EntityFlags {

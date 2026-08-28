@@ -8,9 +8,12 @@
     "worker:dev": "tsx apps/worker/src/index.ts",
     "build": "tsc --noEmit && vite build --config apps/frontend/vite.config.ts",
     "test": "vitest run tests/unit tests/integration tests/acceptance",
+    "test:performance": "vitest run tests/performance",
+    "test:cucumber": "tsx node_modules/@cucumber/cucumber/bin/cucumber-js --import 'tests/steps/**/*.ts' 'tests/features/**/*.feature'",
     "e2e": "playwright test"
   },
   "devDependencies": {
+    "@cucumber/cucumber": "^12.9.0",
     "@playwright/test": "^1.62.1",
     "@types/node": "^26.4.0",
     "@types/ws": "^8.18.1",

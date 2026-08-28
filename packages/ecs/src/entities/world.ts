@@ -1,4 +1,4 @@
-import { DECOMPOSITION_NUTRIENT, EntityFlags, MAX_ARTIFACTS, MAX_ENTITIES, Species } from '../../../shared-types/src/ecs';
+import { BodyShape, DECOMPOSITION_NUTRIENT, EntityFlags, MAX_ARTIFACTS, MAX_BODY_SIZE, MAX_ENTITIES, MIN_BODY_SIZE, SHAPE_ATTACK_FACTOR, Species } from '../../../shared-types/src/ecs';
 
 export class World {
   readonly x = new Float32Array(MAX_ENTITIES);
@@ -11,6 +11,10 @@ export class World {
   readonly sight = new Float32Array(MAX_ENTITIES);
   readonly baseSight = new Float32Array(MAX_ENTITIES);
   readonly metabolismMultiplier = new Float32Array(MAX_ENTITIES);
+  readonly size = new Float32Array(MAX_ENTITIES);
+  readonly attack = new Float32Array(MAX_ENTITIES);
+  readonly defense = new Float32Array(MAX_ENTITIES);
+  readonly shape = new Uint8Array(MAX_ENTITIES);
   readonly bornAt = new Float64Array(MAX_ENTITIES);
   readonly wasteCooldown = new Float32Array(MAX_ENTITIES);
   readonly flags = new Uint8Array(MAX_ENTITIES);
@@ -22,6 +26,8 @@ export class World {
   readonly spawnEnergy = new Float32Array(MAX_ENTITIES);
   readonly spawnSpeed = new Float32Array(MAX_ENTITIES);
   readonly spawnSight = new Float32Array(MAX_ENTITIES);
+  readonly spawnSize = new Float32Array(MAX_ENTITIES);
+  readonly spawnShape = new Uint8Array(MAX_ENTITIES);
   readonly spawnBornAt = new Float64Array(MAX_ENTITIES);
   readonly removeIds = new Uint16Array(MAX_ENTITIES);
   readonly artifactX = new Float32Array(MAX_ARTIFACTS);
@@ -39,7 +45,7 @@ export class World {
     for (let entity = 0; entity < MAX_ENTITIES; entity += 1) this.freeIds[entity] = MAX_ENTITIES - entity - 1;
   }
 
-  queueSpawn(species: Species, x: number, y: number, energy: number, speed: number, sight: number, bornAt = 0): void {
+  queueSpawn(species: Species, x: number, y: number, energy: number, speed: number, sight: number, bornAt = 0, size = 1, shape: BodyShape = BodyShape.Standard): void {
     if (this.spawnCount >= MAX_ENTITIES) return;
     const index = this.spawnCount;
     this.spawnSpecies[index] = species;
@@ -48,6 +54,8 @@ export class World {
     this.spawnEnergy[index] = energy;
     this.spawnSpeed[index] = speed;
     this.spawnSight[index] = sight;
+    this.spawnSize[index] = Math.max(MIN_BODY_SIZE, Math.min(MAX_BODY_SIZE, size));
+    this.spawnShape[index] = shape;
     this.spawnBornAt[index] = bornAt;
     this.spawnCount += 1;
   }
@@ -99,11 +107,15 @@ export class World {
       this.x[entity] = this.spawnX[index];
       this.y[entity] = this.spawnY[index];
       this.energy[entity] = this.spawnEnergy[index];
-      this.speed[entity] = this.spawnSpeed[index];
+      this.speed[entity] = this.spawnSpeed[index] / this.spawnSize[index] * (this.spawnShape[index] === BodyShape.Streamlined ? 1.2 : 1);
       this.baseSpeed[entity] = this.spawnSpeed[index];
       this.sight[entity] = this.spawnSight[index];
       this.baseSight[entity] = this.spawnSight[index];
       this.metabolismMultiplier[entity] = 1;
+      this.size[entity] = this.spawnSize[index];
+      this.shape[entity] = this.spawnShape[index];
+      this.attack[entity] = this.size[entity] * (this.shape[entity] === BodyShape.Spiky ? SHAPE_ATTACK_FACTOR : 1);
+      this.defense[entity] = this.size[entity] * (this.shape[entity] === BodyShape.Armored ? 1.25 : 1);
       this.bornAt[entity] = this.spawnBornAt[index];
       this.wasteCooldown[entity] = 0;
       this.velocityX[entity] = 0;

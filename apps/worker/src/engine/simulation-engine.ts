@@ -5,6 +5,23 @@ import { behaviorSystem, decompositionSystem, disasterSystem, environmentSystem,
 import { FIXED_STEP, SimulationCommand, SimulationConfig, SimulationEvent, SimulationSnapshot, Species } from '../../../../packages/shared-types/src';
 import type { DisasterState } from '../../../../packages/ecs/src/systems/simulation-systems';
 
+const CONFIGURATION_LIMITS = {
+  grassSpawnInterval: { minimum: 0.1, maximum: 5 },
+  maxGrass: { minimum: 10, maximum: 300 },
+  herbivoreSight: { minimum: 1, maximum: 150 },
+  splitEnergy: { minimum: 50, maximum: 300 },
+  carnivoreSpeed: { minimum: 1, maximum: 60 },
+  carnivoreMetabolism: { minimum: 0.1, maximum: 10 },
+} as const;
+
+type AdjustableConfigKey = keyof typeof CONFIGURATION_LIMITS;
+
+function normalizeConfigurationValue(key: AdjustableConfigKey, value: number, currentValue: number): number {
+  if (!Number.isFinite(value)) return currentValue;
+  const limits = CONFIGURATION_LIMITS[key];
+  return Math.max(limits.minimum, Math.min(limits.maximum, value));
+}
+
 export class SimulationEngine {
   private readonly world = new World();
   private readonly nutrientGrid: NutrientGrid;
@@ -16,7 +33,7 @@ export class SimulationEngine {
   private readonly config: SimulationConfig;
 
   constructor(private readonly simulationId: string, width: number, height: number) {
-    this.config = { width, height, initialGrass: 80, initialHerbivores: 18, initialCarnivores: 3, grassSpawnInterval: 1, maxGrass: 100, herbivoreSight: 5, splitEnergy: 150, carnivoreSpeed: 18, carnivoreMetabolism: 3.4 };
+    this.config = { width, height, initialGrass: 140, initialHerbivores: 24, initialCarnivores: 2, grassSpawnInterval: 0.5, maxGrass: 180, herbivoreSight: 12, splitEnergy: 180, carnivoreSpeed: 16, carnivoreMetabolism: 1.8 };
     this.nutrientGrid = new NutrientGrid(width, height);
     this.terrainGrid = new TerrainGrid(width, height);
     seedWorld(this.world, this.config);
@@ -57,7 +74,8 @@ export class SimulationEngine {
       return;
     }
     if (command.type === 'update-config') {
-      this.config[command.key] = command.value;
+      const key = command.key as AdjustableConfigKey;
+      this.config[key] = normalizeConfigurationValue(key, command.value, this.config[key]);
       return;
     }
     this.holdAfterReset = false;

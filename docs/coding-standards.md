@@ -125,6 +125,12 @@
 
 ## 7. プロジェクト固有の適用
 
+## 7.1 Conventional Commits
+
+コミットメッセージは `<type>(<scope>): <short summary>` 形式とし、`type` は `feat`、`fix`、`refactor`、`test`、`docs`、`perf` のいずれかに限定する。要約は簡潔な命令形で書き、無関係な変更を一つのコミットへ混在させない。
+
+テストを実装・変更する場合は、`docs/test-strategy.md` の技法を適用し、対象要件 ID をテスト名またはコメントへ記載する。
+
 - 生物シミュレーションは厳格な ECS パターンで実装する。Entity は数値 ID、Component はデータ、System は処理ロジックとして扱う。
 - Canvas 2D による生物描画は 1x1〜3x3 ピクセルの極小ドットを基本とする。
 - 音響は Web Audio API で動的に生成し、外部音声ファイルやストリームに依存しない。
