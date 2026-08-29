@@ -1,0 +1,28 @@
+name: fitness
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  quality-gates:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit and architecture tests
+        run: npx vitest run src/architecture.fitness.test.ts tests/unit/predation.test.ts
+
+      - name: Type check
+        run: npx tsc --noEmit
