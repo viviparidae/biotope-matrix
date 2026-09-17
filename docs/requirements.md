@@ -16,6 +16,8 @@
 | REQ-FLOCK-001 | 空間グリッドによる群れ行動 | 分離・整列・結合ベクトルを合成し、$O(N)$ 近傍探索で踏襲する | `tests/features/predation.feature` |
 | REQ-ARCH-001 | 適合度関数と CI 保護 | 1 フレーム内の計算時間と依存境界を自動検査する | `tests/features/predation.feature` |
 | REQ-ARCH-002 | メモリ再利用とシリアライズ境界 | `ArrayBuffer` と Free List / Recycle Pool で再割り当てを抑える | `tests/features/predation.feature` |
+| REQ-SUST-001 | 長期生態系持続性監視 | 10,000 ステップで草食・肉食の絶滅ゼロを継続監視し、個体数振幅が安全範囲内である | `src/tests/syntheticTransaction.test.ts` |
+| REQ-SUST-002 | 災害復旧と環境緩和 | 80% 個体喪失イベント後に再生と安定回復が起こり、避難所と負のフィードバックが維持される | `src/tests/syntheticTransaction.test.ts` |
 
 ## 3. 非機能要求
 

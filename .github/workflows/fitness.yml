@@ -24,5 +24,34 @@ jobs:
       - name: Run unit and architecture tests
         run: npx vitest run src/architecture.fitness.test.ts tests/unit/predation.test.ts
 
+      - name: Run synthetic ecosystem transaction checks
+        run: |
+          mkdir -p .artifacts
+          npx vitest run src/tests/syntheticTransaction.test.ts --reporter=json --outputFile=.artifacts/synthetic-results.json
+
+      - name: Validate ecological health metrics
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = '.artifacts/synthetic-results.json';
+          if (!fs.existsSync(path)) {
+            console.error('Synthetic transaction metrics were not produced.');
+            process.exit(1);
+          }
+          const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+          if ((data.numFailedTests ?? 0) > 0 || (data.numFailedTestSuites ?? 0) > 0) {
+            console.error('Synthetic ecosystem checks failed.');
+            process.exit(1);
+          }
+          console.log('Synthetic ecosystem metrics validated:', JSON.stringify({ passed: data.numPassedTests, failed: data.numFailedTests }));
+          NODE
+
+      - name: Upload synthetic metrics artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: synthetic-ecosystem-metrics
+          path: .artifacts/
+
       - name: Type check
         run: npx tsc --noEmit

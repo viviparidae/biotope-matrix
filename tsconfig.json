@@ -8,5 +8,5 @@
     "skipLibCheck": true,
     "lib": ["ES2022", "DOM"]
   },
-  "include": ["apps", "packages", "tests"]
+  "include": ["apps", "packages", "src", "tests"]
 }

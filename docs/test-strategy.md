@@ -46,3 +46,14 @@
 - `pnpm test` で単体・統合・受入の回帰を実行する。
 - `.github/workflows/fitness.yml` で `1 フレーム処理時間` と `起動依存チェック` を自動実行する。
 - 観測不能な要件は、Feature への紐付けと要求 ID の明示を必須とする。
+
+## 8. シンセティックトランザクションによる長期生態系監視
+
+生態系の長期持続性は、対象の推移を事前に定義した合成シナリオで観測し、数千ステップにまたがる振る舞いを「絶滅率」「回復率」「多様性指数」というヘルス指標で監視する。
+
+- 絶滅率: `extinctionRate = zeroPeriods / totalSamples`
+- 回復率: `recoveryRate = (populationAfterRecovery - populationAfterDisaster) / max(populationAfterDisaster, 1)`
+- 多様性指数: `diversity = (grass + herbivores + carnivores) / max(1, totalPopulation)`
+- 安全閾値: `herbivores > 0` かつ `carnivores > 0` かつ `populationAmplitude <= 6..8` を満たす状態を「安定」と判定する
+
+実装では `src/tests/syntheticTransaction.test.ts` に `Arrange / Act / Assert` の合成テストを置き、ノーレンダリングで `10,000` ステップと `3,000` ステップの長期監視を実行する。各テストは観察可能な結果だけを確認し、複雑な実装詳細や描画依存を検査しない。

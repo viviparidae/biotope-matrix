@@ -189,6 +189,9 @@ export function terrainSystem(terrain: TerrainGrid, onEvent?: SimulationEventHan
 
 export function disasterSystem(world: World, terrain: TerrainGrid, state: DisasterState, width: number, height: number, config: Pick<SimulationConfig, 'carnivoreSpeed'>, onEvent?: SimulationEventHandler): void {
   const herbivores = world.count(Species.Herbivore);
+  if (world.count(Species.Carnivore) === 0 && herbivores > 0) {
+    world.queueSpawn(Species.Carnivore, width - 1, height / 2, 100, config.carnivoreSpeed, CARNIVORE_SIGHT);
+  }
   if (world.count(Species.Carnivore) === 0 && herbivores > CARNIVORE_REPLENISH_HERBIVORE_THRESHOLD) {
     world.queueSpawn(Species.Carnivore, width - 1, height / 2, 100, config.carnivoreSpeed, CARNIVORE_SIGHT);
   }
