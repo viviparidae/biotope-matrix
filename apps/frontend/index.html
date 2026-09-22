@@ -10,7 +10,9 @@
       body { display: grid; place-items: center; overflow: auto; }
       main { position: relative; width: min(100vw, 960px); }
       canvas { display: block; width: 100%; height: auto; image-rendering: pixelated; background: #111827; }
-      .status { position: absolute; top: 10px; left: 12px; padding: 8px 10px; color: #d1d5db; background: #111827d9; border: 1px solid #334155; font-size: 12px; pointer-events: none; }
+      .status { position: absolute; top: 10px; left: 12px; display: grid; gap: 4px; padding: 8px 10px; color: #d1d5db; background: #111827d9; border: 1px solid #334155; font-size: 12px; pointer-events: none; }
+      .status-line { white-space: nowrap; }
+      .environment { margin-top: 2px; color: #bfdbfe; }
       .controls { position: absolute; top: 10px; right: 12px; width: 220px; padding: 12px; background: #111827ee; border: 1px solid #475569; box-shadow: 0 8px 24px #0006; }
       .controls h2 { margin: 0 0 10px; font-size: 13px; color: #f8fafc; }
       .control { display: grid; grid-template-columns: 1fr 68px; gap: 8px; align-items: center; margin: 8px 0; font-size: 11px; }
@@ -25,11 +27,14 @@
   <body>
     <main>
       <canvas id="biotope" width="960" height="540" aria-label="極小ドットの生態系シミュレーション"></canvas>
-      <div id="status" class="status" aria-live="polite"></div>
+      <div id="status" class="status" aria-live="polite">
+        <div id="status-line" class="status-line"></div>
+        <div id="environment-state" class="status-line environment"></div>
+      </div>
       <section id="controls" class="controls" aria-label="シミュレーション設定">
         <h2>チューニング</h2>
         <label class="control"><span>草スポーン間隔</span><output id="grass-interval-value"></output><input id="grass-interval" type="range" min="0.1" max="5" step="0.1" value="0.5"></label>
-        <label class="control"><span>草の上限数</span><output id="grass-limit-value"></output><input id="grass-limit" type="range" min="10" max="300" step="10" value="180"></label>
+        <label class="control"><span>草の上限数</span><output id="grass-limit-value"></output><input id="grass-limit" type="range" min="10" max="2000" step="10" value="900"></label>
         <label class="control"><span>草食の視野</span><output id="herbivore-sight-value"></output><input id="herbivore-sight" type="range" min="1" max="150" step="1" value="12"></label>
         <label class="control"><span>分裂エネルギー</span><output id="split-energy-value"></output><input id="split-energy" type="range" min="50" max="300" step="5" value="180"></label>
         <label class="control"><span>肉食の移動速度</span><output id="carnivore-speed-value"></output><input id="carnivore-speed" type="range" min="1" max="60" step="1" value="16"></label>
