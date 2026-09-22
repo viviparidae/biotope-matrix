@@ -1,5 +1,5 @@
 import { WebSocketServer } from 'ws';
-import type { ClientMessage, ServerMessage } from '../../../packages/shared-types/src/api';
+import type { ClientMessage, ServerMessage, SimulationSnapshot } from '../../../packages/shared-types/src/api';
 import { SimulationEngine } from './engine/simulation-engine';
 
 const port = Number(process.env.PORT ?? 8787);
@@ -14,6 +14,26 @@ server.on('error', (error: NodeJS.ErrnoException) => {
 	console.error(error);
 });
 
+function serializeSnapshot(snapshot: SimulationSnapshot): object {
+	return {
+		...snapshot,
+		entities: {
+			flags: Array.from(snapshot.entities.flags),
+			species: Array.from(snapshot.entities.species),
+			x: Array.from(snapshot.entities.x),
+			y: Array.from(snapshot.entities.y),
+		},
+		artifacts: {
+			x: Array.from(snapshot.artifacts.x),
+			y: Array.from(snapshot.artifacts.y),
+			remaining: Array.from(snapshot.artifacts.remaining),
+			residual: Array.from(snapshot.artifacts.residual),
+		},
+		terrain: { ...snapshot.terrain, kinds: Array.from(snapshot.terrain.kinds) },
+		nutrient: { ...snapshot.nutrient, values: Array.from(snapshot.nutrient.values) },
+	};
+}
+
 server.on('connection', (client) => {
 	clients.add(client);
 	client.on('close', () => clients.delete(client));
@@ -23,13 +43,13 @@ server.on('connection', (client) => {
 			engine.apply(message.command);
 			if (message.requestId) client.send(JSON.stringify({ type: 'ack', requestId: message.requestId } satisfies ServerMessage));
 		}
-		if (message.type === 'subscribe') client.send(JSON.stringify({ type: 'snapshot', snapshot: engine.tick().snapshot, events: [] } satisfies ServerMessage));
+		if (message.type === 'subscribe') client.send(JSON.stringify({ type: 'snapshot', snapshot: serializeSnapshot(engine.tick().snapshot), events: [] }));
 	});
 });
 
 setInterval(() => {
 	const result = engine.tick();
-	const message: ServerMessage = { type: 'snapshot', snapshot: result.snapshot, events: result.events };
+	const message = { type: 'snapshot', snapshot: serializeSnapshot(result.snapshot), events: result.events };
 	const serialized = JSON.stringify(message);
 	for (const client of clients) if (client.readyState === 1) client.send(serialized);
 }, 1000 / 60);

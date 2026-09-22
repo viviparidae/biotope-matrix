@@ -148,4 +148,12 @@ export class World {
     }
     return total;
   }
+
+  countPending(species: Species): number {
+    let total = 0;
+    for (let index = 0; index < this.spawnCount; index += 1) {
+      if (this.spawnSpecies[index] === species) total += 1;
+    }
+    return total;
+  }
 }

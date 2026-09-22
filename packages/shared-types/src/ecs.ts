@@ -1,4 +1,4 @@
-export const MAX_ENTITIES = 512;
+export const MAX_ENTITIES = 2048;
 export const FIXED_STEP = 1 / 60;
 export const GRASS_LIFETIME = 30;
 export const GRASS_SPAWN_INTERVAL = 1;
@@ -23,7 +23,7 @@ export const DECOMPOSITION_NUTRIENT = 90;
 export const GRASS_NUTRIENT_CONSUMPTION = 7;
 export const RANDOM_GRASS_NUTRIENT_CONSUMPTION = 2;
 export const BREEDING_MODE_DURATION = 12;
-export const MAX_ARTIFACTS = 128;
+export const MAX_ARTIFACTS = 512;
 export const DECOMPOSITION_TIME = 12;
 export const NUTRIENT_RESIDUAL_TIME = 18;
 export const WASTE_DECOMPOSITION_TIME = 2;
@@ -40,6 +40,15 @@ export const PREDATION_SIZE_RATIO = 0.8;
 export const STARVATION_ENERGY_THRESHOLD = 20;
 export const SHAPE_ATTACK_FACTOR = 1.15;
 export const SHAPE_DEFENSE_FACTOR = 1.25;
+export const MAX_ENERGY = 100;
+export const HERBIVORE_MIN_POPULATION = 20;
+export const HERBIVORE_MAX_POPULATION = 700;
+export const CARNIVORE_MIN_POPULATION = 4;
+export const CARNIVORE_MAX_POPULATION = 200;
+export const REFUGIUM_HERBIVORE_SAFETY_THRESHOLD = 60;
+export const REFUGIUM_MINIMUM_GRASS = 80;
+export const REFUGE_ENERGY_BOOST = 2;
+export const EMERGENCY_ENERGY_BOOST = 25;
 
 export const enum Species {
   None = 0,

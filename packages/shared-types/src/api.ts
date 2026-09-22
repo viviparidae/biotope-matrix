@@ -7,14 +7,14 @@ export interface SimulationSnapshot {
   readonly width: number;
   readonly height: number;
   readonly entities: {
-    readonly flags: number[];
-    readonly species: number[];
-    readonly x: number[];
-    readonly y: number[];
+    readonly flags: Uint8Array;
+    readonly species: Uint8Array;
+    readonly x: Float32Array;
+    readonly y: Float32Array;
   };
-  readonly artifacts: { readonly x: number[]; readonly y: number[]; readonly remaining: number[]; readonly residual: number[] };
-  readonly terrain: { readonly columns: number; readonly rows: number; readonly kinds: number[]; readonly waterFlow: number };
-  readonly nutrient: { readonly columns: number; readonly rows: number; readonly values: number[] };
+  readonly artifacts: { readonly x: Float32Array; readonly y: Float32Array; readonly remaining: Float32Array; readonly residual: Float32Array };
+  readonly terrain: { readonly columns: number; readonly rows: number; readonly kinds: Uint8Array; readonly waterFlow: number };
+  readonly nutrient: { readonly columns: number; readonly rows: number; readonly values: Uint8Array };
   readonly counts: { readonly grass: number; readonly herbivores: number; readonly carnivores: number };
   readonly config: SimulationConfig;
 }

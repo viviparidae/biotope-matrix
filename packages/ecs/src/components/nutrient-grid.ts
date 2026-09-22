@@ -4,8 +4,7 @@ const MAX_NUTRIENT = 255;
 export class NutrientGrid {
   readonly columns: number;
   readonly rows: number;
-  get serializedValues(): number[] { return Array.from(this.values); }
-  private readonly values: Uint8Array;
+  readonly values: Uint8Array;
 
   constructor(width: number, height: number) {
     this.columns = Math.max(1, Math.ceil(width / NUTRIENT_CELL_SIZE));

@@ -1,3 +1,24 @@
+import { TerrainGrid, TerrainKind } from '../../packages/ecs/src/components/terrain-grid';
+import { World } from '../../packages/ecs/src/entities/world';
+import {
+  CARNIVORE_MAX_POPULATION,
+  CARNIVORE_MIN_POPULATION,
+  CARNIVORE_SIGHT,
+  EMERGENCY_ENERGY_BOOST,
+  EntityFlags,
+  HERBIVORE_BASE_SPEED,
+  HERBIVORE_MAX_POPULATION,
+  HERBIVORE_MIN_POPULATION,
+  MAX_ENERGY,
+  REFUGIUM_HERBIVORE_SAFETY_THRESHOLD,
+  REFUGIUM_MINIMUM_GRASS,
+  REFUGE_ENERGY_BOOST,
+  SimulationConfig,
+  SimulationEvent,
+  Species,
+  STARVATION_ENERGY_THRESHOLD,
+} from '../../packages/shared-types/src/ecs';
+
 export type PopulationHistoryEntry = {
   herbivores: number;
   carnivores: number;
@@ -91,4 +112,116 @@ export function simulateDisasterRecovery(engine: { tick: () => { snapshot: { cou
     recovery,
     refugiumProtected: true,
   };
+}
+
+export function applySustainabilityRulesSystem(
+  world: World,
+  terrainGrid: TerrainGrid,
+  resilience: SustainabilityPressure,
+  refugium: RefugiumGuard,
+): void {
+  const herbivoreCount = world.count(Species.Herbivore);
+  const carnivoreCount = world.count(Species.Carnivore);
+  const safetyPressure = herbivoreCount <= resilience.safetyThreshold;
+
+  for (let entity = 0; entity < world.flags.length; entity += 1) {
+    if ((world.flags[entity] & EntityFlags.Alive) === 0) continue;
+    const species = world.species[entity];
+
+    if (species === Species.Herbivore) {
+      if (world.energy[entity] <= STARVATION_ENERGY_THRESHOLD) {
+        world.speed[entity] = Math.min(world.speed[entity], world.baseSpeed[entity] * resilience.dormancyMultiplier);
+        world.metabolismMultiplier[entity] = Math.min(world.metabolismMultiplier[entity], resilience.dormancyMultiplier);
+      }
+      if (safetyPressure) {
+        world.baseSight[entity] = Math.max(1, world.baseSight[entity] * (1 + resilience.herbivoreStealthBoost));
+        world.sight[entity] = Math.max(1, world.sight[entity] * (1 + resilience.herbivoreStealthBoost * 0.5));
+      }
+    }
+
+    if (species === Species.Carnivore && safetyPressure) {
+      const speedReduction = Math.max(0.5, 1 - resilience.predatorSpeedReduction);
+      const sightReduction = Math.max(0.5, 1 - resilience.predatorSightReduction);
+      world.speed[entity] *= speedReduction;
+      world.sight[entity] *= sightReduction;
+      world.baseSpeed[entity] *= speedReduction;
+    }
+
+    if (species === Species.Herbivore && refugium.refugeActive && world.size[entity] < refugium.protectedSizeLimit) {
+      world.energy[entity] = Math.min(world.energy[entity] + REFUGE_ENERGY_BOOST, MAX_ENERGY);
+    }
+  }
+
+  if (herbivoreCount <= resilience.safetyThreshold && carnivoreCount > 0) {
+    terrainGrid.kinds.fill(TerrainKind.Wetland);
+  }
+
+  if (herbivoreCount <= 1 && world.count(Species.Carnivore) > 0) {
+    for (let entity = 0; entity < world.flags.length; entity += 1) {
+      if ((world.flags[entity] & EntityFlags.Alive) === 0 || world.species[entity] !== Species.Herbivore) continue;
+      world.energy[entity] = Math.min(MAX_ENERGY, world.energy[entity] + EMERGENCY_ENERGY_BOOST);
+    }
+  }
+}
+
+export function enforcePopulationBoundsSystem(
+  world: World,
+  config: Pick<SimulationConfig, 'width' | 'height' | 'herbivoreSight' | 'carnivoreSpeed'>,
+): void {
+  const herbivores = world.count(Species.Herbivore);
+  const carnivores = world.count(Species.Carnivore);
+
+  if (herbivores < HERBIVORE_MIN_POPULATION) {
+    for (let spawn = 0; spawn < HERBIVORE_MIN_POPULATION - herbivores; spawn += 1) {
+      world.queueSpawn(Species.Herbivore, Math.random() * config.width, Math.random() * config.height, MAX_ENERGY, HERBIVORE_BASE_SPEED, config.herbivoreSight);
+    }
+  }
+
+  if (carnivores < CARNIVORE_MIN_POPULATION) {
+    for (let spawn = 0; spawn < CARNIVORE_MIN_POPULATION - carnivores; spawn += 1) {
+      world.queueSpawn(Species.Carnivore, Math.random() * config.width, Math.random() * config.height, MAX_ENERGY, config.carnivoreSpeed, CARNIVORE_SIGHT);
+    }
+  }
+
+  if (herbivores > HERBIVORE_MAX_POPULATION) {
+    let excess = herbivores - HERBIVORE_MAX_POPULATION;
+    for (let entity = 0; entity < world.flags.length && excess > 0; entity += 1) {
+      if ((world.flags[entity] & EntityFlags.Alive) === 0 || world.species[entity] !== Species.Herbivore) continue;
+      world.queueDeath(entity, 1, 1);
+      excess -= 1;
+    }
+  }
+
+  if (carnivores > CARNIVORE_MAX_POPULATION) {
+    let excess = carnivores - CARNIVORE_MAX_POPULATION;
+    for (let entity = 0; entity < world.flags.length && excess > 0; entity += 1) {
+      if ((world.flags[entity] & EntityFlags.Alive) === 0 || world.species[entity] !== Species.Carnivore) continue;
+      world.queueDeath(entity, 1, 1);
+      excess -= 1;
+    }
+  }
+}
+
+export function ensureRefugiumGrowthSystem(
+  world: World,
+  terrainGrid: TerrainGrid,
+  refugium: RefugiumGuard,
+  width: number,
+  height: number,
+  elapsed: number,
+  onEvent?: (event: SimulationEvent) => void,
+): void {
+  const minimumGrass = Math.max(REFUGIUM_MINIMUM_GRASS, Math.ceil(refugium.grassSpawnFloor));
+  while (world.count(Species.Grass) + world.countPending(Species.Grass) < minimumGrass) {
+    const x = (Math.random() * Math.min(width, 160)) + (width * 0.2);
+    const y = (Math.random() * Math.min(height, 160)) + (height * 0.2);
+    world.queueSpawn(Species.Grass, x, y, 0, 0, 0, elapsed);
+    onEvent?.({ type: 'grass-spawn', x, y });
+  }
+
+  if (world.count(Species.Herbivore) <= REFUGIUM_HERBIVORE_SAFETY_THRESHOLD) {
+    const midRowIndex = terrainGrid.columns * Math.floor(terrainGrid.rows / 2);
+    terrainGrid.kinds[Math.min(terrainGrid.kinds.length - 1, midRowIndex + 1)] = TerrainKind.Wetland;
+    terrainGrid.kinds[Math.min(terrainGrid.kinds.length - 1, midRowIndex + 2)] = TerrainKind.Wetland;
+  }
 }

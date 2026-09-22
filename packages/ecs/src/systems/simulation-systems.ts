@@ -3,12 +3,12 @@ import { TerrainGrid, TerrainKind, TERRAIN_CELL_SIZE } from '../components/terra
 import { World } from '../entities/world';
 import { flockingSystem } from './flocking';
 import { predationSystem } from './predation';
-import { BREEDING_MODE_DURATION, CARNIVORE_ENERGY_GAIN, CARNIVORE_REPLENISH_HERBIVORE_THRESHOLD, CARNIVORE_SIGHT, COLD_METABOLISM_FACTOR, COLD_SPEED_FACTOR, COLD_TEMPERATURE, CONTACT_DISTANCE, CRATER_RADIUS, DECOMPOSITION_NUTRIENT, DECOMPOSITION_TIME, ENERGY_AFTER_SPLIT, EntityFlags, FLOOD_WETLAND_THRESHOLD, FIXED_STEP, GRASS_ENERGY, GRASS_LIFETIME, GRASS_NUTRIENT_CONSUMPTION, HERBIVORE_BASE_SPEED, HERBIVORE_BREEDING_THRESHOLD, HERBIVORE_METABOLISM, MAX_BODY_SIZE, MIN_BODY_SIZE, MAX_ENTITIES, MUTATION_FACTOR_RANGE, MUTATION_MIN_FACTOR, NIGHT_BRIGHTNESS, NIGHT_SIGHT_FACTOR, NUTRIENT_RESIDUAL_TIME, POPULATION_METEOR_THRESHOLD, RANDOM_GRASS_NUTRIENT_CONSUMPTION, SimulationConfig, SimulationEventHandler, Species, STARVATION_ENERGY_THRESHOLD, WASTE_DECOMPOSITION_TIME, WASTE_INTERVAL, WASTE_NUTRIENT, WASTE_RESIDUAL_TIME } from '../../../shared-types/src/ecs';
+import { BREEDING_MODE_DURATION, CARNIVORE_ENERGY_GAIN, CARNIVORE_REPLENISH_HERBIVORE_THRESHOLD, CARNIVORE_SIGHT, COLD_METABOLISM_FACTOR, COLD_SPEED_FACTOR, COLD_TEMPERATURE, CONTACT_DISTANCE, CRATER_RADIUS, DECOMPOSITION_NUTRIENT, DECOMPOSITION_TIME, ENERGY_AFTER_SPLIT, EntityFlags, FLOOD_WETLAND_THRESHOLD, FIXED_STEP, GRASS_ENERGY, GRASS_LIFETIME, GRASS_NUTRIENT_CONSUMPTION, HERBIVORE_BASE_SPEED, HERBIVORE_BREEDING_THRESHOLD, HERBIVORE_METABOLISM, MAX_BODY_SIZE, MIN_BODY_SIZE, MAX_ENERGY, MAX_ENTITIES, MUTATION_FACTOR_RANGE, MUTATION_MIN_FACTOR, NIGHT_BRIGHTNESS, NIGHT_SIGHT_FACTOR, NUTRIENT_RESIDUAL_TIME, POPULATION_METEOR_THRESHOLD, RANDOM_GRASS_NUTRIENT_CONSUMPTION, SimulationConfig, SimulationEventHandler, Species, STARVATION_ENERGY_THRESHOLD, WASTE_DECOMPOSITION_TIME, WASTE_INTERVAL, WASTE_NUTRIENT, WASTE_RESIDUAL_TIME } from '../../../shared-types/src/ecs';
 
 export function seedWorld(world: World, config: SimulationConfig): void {
   for (let index = 0; index < config.initialGrass; index += 1) world.queueSpawn(Species.Grass, Math.random() * config.width, Math.random() * config.height, 0, 0, 0, 0);
-  for (let index = 0; index < config.initialHerbivores; index += 1) world.queueSpawn(Species.Herbivore, Math.random() * config.width, Math.random() * config.height, 100, 22, config.herbivoreSight);
-  for (let index = 0; index < config.initialCarnivores; index += 1) world.queueSpawn(Species.Carnivore, Math.random() * config.width, Math.random() * config.height, 100, config.carnivoreSpeed, 100);
+  for (let index = 0; index < config.initialHerbivores; index += 1) world.queueSpawn(Species.Herbivore, Math.random() * config.width, Math.random() * config.height, MAX_ENERGY, HERBIVORE_BASE_SPEED, config.herbivoreSight);
+  for (let index = 0; index < config.initialCarnivores; index += 1) world.queueSpawn(Species.Carnivore, Math.random() * config.width, Math.random() * config.height, MAX_ENERGY, config.carnivoreSpeed, CARNIVORE_SIGHT);
   world.commitCommands();
 }
 
@@ -106,49 +106,89 @@ export function movementSystem(world: World, terrain: TerrainGrid, deltaSeconds:
   }
 }
 
-export function interactionSystem(world: World, terrain: TerrainGrid, config: SimulationConfig, onEvent?: SimulationEventHandler): void {
+function handleHerbivoreGrazingAndReproduction(world: World, terrain: TerrainGrid, config: SimulationConfig, onEvent?: SimulationEventHandler): void {
   for (let entity = 0; entity < MAX_ENTITIES; entity += 1) {
     if ((world.flags[entity] & EntityFlags.Alive) === 0 || (world.flags[entity] & EntityFlags.PendingRemoval) !== 0) continue;
-    const kind = world.species[entity];
-    if (kind === Species.Herbivore) {
-      const grass = nearest(world, entity, Species.Grass, CONTACT_DISTANCE);
-      if (grass >= 0) { world.energy[entity] += GRASS_ENERGY; terrain.addGrazing(world.x[entity], world.y[entity]); world.queueRemove(grass); }
-      if (world.energy[entity] > config.splitEnergy) {
-        world.energy[entity] = ENERGY_AFTER_SPLIT;
-        const mutationFactor = MUTATION_MIN_FACTOR + Math.random() * MUTATION_FACTOR_RANGE;
-        world.queueSpawn(Species.Herbivore, world.x[entity] + CONTACT_DISTANCE - 1, world.y[entity] + CONTACT_DISTANCE - 1, ENERGY_AFTER_SPLIT, world.speed[entity] * mutationFactor, config.herbivoreSight * mutationFactor);
-        onEvent?.({ type: 'split', x: world.x[entity], y: world.y[entity] });
-      }
+    if (world.species[entity] !== Species.Herbivore) continue;
+    const grass = nearest(world, entity, Species.Grass, CONTACT_DISTANCE);
+    if (grass >= 0) {
+      world.energy[entity] += GRASS_ENERGY;
+      terrain.addGrazing(world.x[entity], world.y[entity]);
+      world.queueRemove(grass);
+    }
+    if (world.energy[entity] > config.splitEnergy) {
+      world.energy[entity] = ENERGY_AFTER_SPLIT;
+      const mutationFactor = MUTATION_MIN_FACTOR + Math.random() * MUTATION_FACTOR_RANGE;
+      world.queueSpawn(
+        Species.Herbivore,
+        world.x[entity] + CONTACT_DISTANCE - 1,
+        world.y[entity] + CONTACT_DISTANCE - 1,
+        ENERGY_AFTER_SPLIT,
+        world.speed[entity] * mutationFactor,
+        config.herbivoreSight * mutationFactor,
+      );
+      onEvent?.({ type: 'split', x: world.x[entity], y: world.y[entity] });
     }
   }
-  predationSystem(world, terrain, config, Math.random, onEvent);
+}
+
+function handleCarnivoreReproduction(world: World, config: SimulationConfig, onEvent?: SimulationEventHandler): void {
   for (let entity = 0; entity < MAX_ENTITIES; entity += 1) {
-    if ((world.flags[entity] & EntityFlags.Alive) === 0 || (world.flags[entity] & EntityFlags.PendingRemoval) !== 0 || world.species[entity] !== Species.Carnivore || world.energy[entity] <= config.splitEnergy) continue;
-        world.energy[entity] = ENERGY_AFTER_SPLIT;
-        const mutationFactor = MUTATION_MIN_FACTOR + Math.random() * MUTATION_FACTOR_RANGE;
-        const sizeMutation = Math.max(MIN_BODY_SIZE, Math.min(MAX_BODY_SIZE, world.size[entity] * mutationFactor));
-        world.queueSpawn(Species.Carnivore, world.x[entity] + CONTACT_DISTANCE - 1, world.y[entity] + CONTACT_DISTANCE - 1, ENERGY_AFTER_SPLIT, world.speed[entity] * mutationFactor, CARNIVORE_SIGHT * mutationFactor, 0, sizeMutation, world.shape[entity]);
-        onEvent?.({ type: 'split', x: world.x[entity], y: world.y[entity] });
+    if ((world.flags[entity] & EntityFlags.Alive) === 0 || (world.flags[entity] & EntityFlags.PendingRemoval) !== 0) continue;
+    if (world.species[entity] !== Species.Carnivore || world.energy[entity] <= config.splitEnergy) continue;
+    world.energy[entity] = ENERGY_AFTER_SPLIT;
+    const mutationFactor = MUTATION_MIN_FACTOR + Math.random() * MUTATION_FACTOR_RANGE;
+    const sizeMutation = Math.max(MIN_BODY_SIZE, Math.min(MAX_BODY_SIZE, world.size[entity] * mutationFactor));
+    world.queueSpawn(
+      Species.Carnivore,
+      world.x[entity] + CONTACT_DISTANCE - 1,
+      world.y[entity] + CONTACT_DISTANCE - 1,
+      ENERGY_AFTER_SPLIT,
+      world.speed[entity] * mutationFactor,
+      CARNIVORE_SIGHT * mutationFactor,
+      0,
+      sizeMutation,
+      world.shape[entity],
+    );
+    onEvent?.({ type: 'split', x: world.x[entity], y: world.y[entity] });
+  }
+}
+
+export function interactionSystem(world: World, terrain: TerrainGrid, config: SimulationConfig, onEvent?: SimulationEventHandler): void {
+  handleHerbivoreGrazingAndReproduction(world, terrain, config, onEvent);
+  predationSystem(world, terrain, config, Math.random, onEvent);
+  handleCarnivoreReproduction(world, config, onEvent);
+}
+
+function updatePlantLifecycle(world: World, entity: number, elapsed: number): void {
+  if (elapsed - world.bornAt[entity] >= GRASS_LIFETIME) {
+    world.queueRemove(entity);
+  }
+}
+
+function updateAnimalLifecycle(world: World, entity: number, deltaSeconds: number, config: SimulationConfig): void {
+  const baseMetabolism = world.species[entity] === Species.Herbivore ? HERBIVORE_METABOLISM : config.carnivoreMetabolism;
+  const speedFactor = world.species[entity] === Species.Herbivore ? world.speed[entity] / HERBIVORE_BASE_SPEED : 1;
+  world.energy[entity] -= baseMetabolism * speedFactor * world.size[entity] * world.metabolismMultiplier[entity] * deltaSeconds;
+
+  if (world.energy[entity] <= 0) {
+    world.queueDeath(entity, DECOMPOSITION_TIME, NUTRIENT_RESIDUAL_TIME);
+  } else {
+    world.wasteCooldown[entity] -= deltaSeconds;
+    if (world.wasteCooldown[entity] <= 0) {
+      world.queueWaste(entity, WASTE_DECOMPOSITION_TIME, WASTE_RESIDUAL_TIME, WASTE_NUTRIENT);
+      world.wasteCooldown[entity] = WASTE_INTERVAL;
+    }
   }
 }
 
 export function lifecycleSystem(world: World, elapsed: number, deltaSeconds: number, config: SimulationConfig): void {
   for (let entity = 0; entity < MAX_ENTITIES; entity += 1) {
     if ((world.flags[entity] & EntityFlags.Alive) === 0) continue;
-    if (world.species[entity] === Species.Grass) { if (elapsed - world.bornAt[entity] >= GRASS_LIFETIME) world.queueRemove(entity); }
-    else {
-      const baseMetabolism = world.species[entity] === Species.Herbivore ? HERBIVORE_METABOLISM : config.carnivoreMetabolism;
-      const speedFactor = world.species[entity] === Species.Herbivore ? world.speed[entity] / HERBIVORE_BASE_SPEED : 1;
-      world.energy[entity] -= baseMetabolism * speedFactor * world.size[entity] * world.metabolismMultiplier[entity] * deltaSeconds;
-        if (world.energy[entity] <= 0) {
-          world.queueDeath(entity, DECOMPOSITION_TIME, NUTRIENT_RESIDUAL_TIME);
-        } else {
-          world.wasteCooldown[entity] -= deltaSeconds;
-          if (world.wasteCooldown[entity] <= 0) {
-            world.queueWaste(entity, WASTE_DECOMPOSITION_TIME, WASTE_RESIDUAL_TIME, WASTE_NUTRIENT);
-            world.wasteCooldown[entity] = WASTE_INTERVAL;
-          }
-        }
+    if (world.species[entity] === Species.Grass) {
+      updatePlantLifecycle(world, entity, elapsed);
+    } else {
+      updateAnimalLifecycle(world, entity, deltaSeconds, config);
     }
   }
 }
@@ -189,11 +229,8 @@ export function terrainSystem(terrain: TerrainGrid, onEvent?: SimulationEventHan
 
 export function disasterSystem(world: World, terrain: TerrainGrid, state: DisasterState, width: number, height: number, config: Pick<SimulationConfig, 'carnivoreSpeed'>, onEvent?: SimulationEventHandler): void {
   const herbivores = world.count(Species.Herbivore);
-  if (world.count(Species.Carnivore) === 0 && herbivores > 0) {
-    world.queueSpawn(Species.Carnivore, width - 1, height / 2, 100, config.carnivoreSpeed, CARNIVORE_SIGHT);
-  }
   if (world.count(Species.Carnivore) === 0 && herbivores > CARNIVORE_REPLENISH_HERBIVORE_THRESHOLD) {
-    world.queueSpawn(Species.Carnivore, width - 1, height / 2, 100, config.carnivoreSpeed, CARNIVORE_SIGHT);
+    world.queueSpawn(Species.Carnivore, width - 1, height / 2, MAX_ENERGY, config.carnivoreSpeed, CARNIVORE_SIGHT);
   }
   if (herbivores >= HERBIVORE_BREEDING_THRESHOLD && state.breedingRemaining <= 0) { state.breedingRemaining = BREEDING_MODE_DURATION; onEvent?.({ type: 'breeding-mode', x: width / 2, y: height / 2 }); }
   if (state.breedingRemaining > 0) state.breedingRemaining -= FIXED_STEP;
