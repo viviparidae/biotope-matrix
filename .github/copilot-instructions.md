@@ -4,11 +4,12 @@
 
 ## 必須参照ドキュメント
 
-1. `docs/coding-standards.md`
-2. `docs/architecture.md`
-3. `docs/requirements.md`
-4. `docs/test-strategy.md`
-5. `tests/features/*.feature` の関連要件タグ
+1. `.github/SKILL.md`
+2. `docs/coding-standards.md`
+3. `docs/architecture.md`
+4. `docs/requirements.md`
+5. `docs/test-strategy.md`
+6. `tests/features/*.feature` の関連要件タグ
 
 ## 生成時の必須ルール
 
