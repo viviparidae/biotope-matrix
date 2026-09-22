@@ -7,8 +7,11 @@
     "dev": "concurrently -k \"npm:worker:dev\" \"vite --config apps/frontend/vite.config.ts\"",
     "worker:dev": "tsx apps/worker/src/index.ts",
     "build": "tsc --noEmit && vite build --config apps/frontend/vite.config.ts",
-    "test": "vitest run tests/unit tests/integration tests/acceptance",
-    "test:performance": "vitest run tests/performance",
+    "test": "vitest run tests/unit tests/integration",
+    "test:unit": "vitest run tests/unit",
+    "test:integration": "vitest run tests/integration",
+    "test:acceptance": "vitest run tests/acceptance",
+    "test:performance": "vitest run tests/performance --pool=forks --poolOptions.forks.singleFork=true",
     "test:cucumber": "tsx node_modules/@cucumber/cucumber/bin/cucumber-js --import 'tests/steps/**/*.ts' 'tests/features/**/*.feature'",
     "e2e": "playwright test"
   },

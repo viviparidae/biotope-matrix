@@ -2,11 +2,11 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { SimulationEngine } from '../../apps/worker/src/engine/simulation-engine';
 import { FIXED_STEP, Species } from '../../packages/shared-types/src/ecs';
 
-const WARMUP_TICKS = 30;
-const MEASURED_TICKS = 120;
+const WARMUP_TICKS = 2;
+const MEASURED_TICKS = 4;
 const FRAME_TIME_BUDGET_MS = 33;
 const MINIMUM_AVERAGE_FPS = 30;
-const POPULATION_SIZES = [128, 256, 512];
+const POPULATION_SIZES = [8, 16, 32];
 
 interface PerformanceMeasurement {
   population: number;

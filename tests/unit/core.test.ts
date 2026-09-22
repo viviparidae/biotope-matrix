@@ -2,8 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { NutrientGrid } from '../../packages/ecs/src/components/nutrient-grid';
 import { TerrainGrid, TerrainKind } from '../../packages/ecs/src/components/terrain-grid';
 import { World } from '../../packages/ecs/src/entities/world';
-import { DECOMPOSITION_TIME, EntityFlags, NUTRIENT_RESIDUAL_TIME, SimulationConfig, Species } from '../../packages/shared-types/src/ecs';
+import { CARNIVORE_MAX_POPULATION, DECOMPOSITION_TIME, EntityFlags, HERBIVORE_MAX_POPULATION, NUTRIENT_RESIDUAL_TIME, SimulationConfig, Species } from '../../packages/shared-types/src/ecs';
 import { environmentSystem, interactionSystem, lifecycleSystem } from '../../packages/ecs/src/systems/simulation-systems';
+import { enforcePopulationBoundsSystem } from '../../src/systems/sustainabilitySystem';
 
 const simulationConfig: SimulationConfig = {
   width: 240,
@@ -175,5 +176,31 @@ describe('生態系システム', () => {
     expect(world.sight[0]).toBe(2.5);
     expect(world.speed[0]).toBeCloseTo(15.4);
     expect(world.metabolismMultiplier[0]).toBe(1.25);
+  });
+
+  it('REQ-SUST-001: パフォーマンス余裕のある範囲で草食と肉食の上限を拡張する', () => {
+    // Arrange
+    const world = new World();
+    const herbivoreCount = HERBIVORE_MAX_POPULATION + 240;
+    const carnivoreCount = CARNIVORE_MAX_POPULATION + 80;
+
+    expect(HERBIVORE_MAX_POPULATION).toBeGreaterThan(600);
+    expect(CARNIVORE_MAX_POPULATION).toBeGreaterThan(120);
+
+    for (let index = 0; index < herbivoreCount; index += 1) {
+      world.queueSpawn(Species.Herbivore, (index % 100) * 2, (index % 80) * 2, 100, 22, 5);
+    }
+    for (let index = 0; index < carnivoreCount; index += 1) {
+      world.queueSpawn(Species.Carnivore, (index % 70) * 2, (index % 60) * 2, 100, 12, 10);
+    }
+    world.commitCommands();
+
+    // Act
+    enforcePopulationBoundsSystem(world, { width: 240, height: 240, herbivoreSight: 5, carnivoreSpeed: 12 });
+    world.commitCommands();
+
+    // Assert
+    expect(world.count(Species.Herbivore)).toBe(HERBIVORE_MAX_POPULATION);
+    expect(world.count(Species.Carnivore)).toBe(CARNIVORE_MAX_POPULATION);
   });
 });
