@@ -1,37 +1,37 @@
-# Documentation Quality System Guide
+# ドキュメント品質運用ガイド
 
-## 1. Purpose
+## 1. 目的
 
-This repository applies a document-as-code workflow that aligns project requirements, implementation tests, and design evidence with the ISO/IEC 29148 and ISO/IEC 25010 quality expectations.
+このリポジトリでは、プロジェクトの要求事項、実装テスト、設計上の証跡を ISO/IEC 29148 と ISO/IEC 25010 の品質期待値と整合させるため、文書をコードとして扱う運用を採用しています。
 
-## 2. Quality objectives
+## 2. 品質目標
 
-The quality gate protects the following system characteristics:
+品質ゲートでは、以下のシステム特性を保護します。
 
-- Consistency: requirement IDs, titles, and parent relationships are unique and not contradictory.
-- Traceability: every requirement links to its parent, design evidence, and test evidence.
-- Verifiability: functional requirements use Given-When-Then phrases, while non-functional requirements include response measures.
-- Completeness and clarity: no unresolved placeholders, no broken parent references, and no ambiguous wording.
-- Maintainability: the portal and CI pipeline keep evidence and documentation synchronized.
+- 整合性: 要求 ID、タイトル、親子関係が一意であり、相反しないこと。
+- 追跡可能性: すべての要求が親要件、設計証跡、テスト証跡と紐づいていること。
+- 検証可能性: 機能要求は Given-When-Then 形式を用い、非機能要求には応答時間や性能指標などの測定値を含めること。
+- 完全性と明確性: 未解決のプレースホルダー、壊れた親参照、曖昧な表現がないこと。
+- 保守性: ポータルと CI パイプラインが証跡と文書を同期し続けること。
 
-## 3. Required sources of truth
+## 3. 必須の真実情報源
 
-- Requirement data: docs/requirements/data/*.yml
-- Human-readable requirement summary: docs/requirements.md
-- Test strategy: docs/test-strategy.md
-- Architecture and coding rules: docs/architecture.md and docs/coding-standards.md
-- CI validation: .github/workflows/docs-ci.yml
+- 要求データ: docs/requirements/data/*.yml
+- 人間が読む要求要約: docs/requirements.md
+- テスト戦略: docs/test-strategy.md
+- アーキテクチャとコーディング規約: docs/architecture.md と docs/coding-standards.md
+- CI 検証: .github/workflows/docs-ci.yml
 
-## 4. Operating procedure
+## 4. 運用手順
 
-1. Define requirement data in YAML under docs/requirements/data.
-2. Ensure each requirement has a unique ID, a parent list, a category, and a verification rule.
-3. Add or update a corresponding Gherkin scenario or response-measure based validation.
-4. Run the validation script locally before opening a pull request.
-5. Regenerate the traceability diagram and review the generated Mermaid DAG.
-6. Confirm the MkDocs portal still builds with the docs index and navigation.
+1. docs/requirements/data 配下に YAML 形式で要求データを定義する。
+2. 各要求に一意の ID、親要件リスト、カテゴリ、検証ルールが設定されていることを確認する。
+3. 対応する Gherkin シナリオまたは応答測定に基づく検証を追加・更新する。
+4. プルリクエストを開く前に、ローカルで検証スクリプトを実行する。
+5. トレーサビリティ図を再生成し、生成された Mermaid DAG を確認する。
+6. MkDocs ポータルがドキュメント索引とナビゲーションを含めて正常にビルドできることを確認する。
 
-## 5. Local validation commands
+## 5. ローカル検証コマンド
 
 ```bash
 python3 scripts/validate_requirements.py
@@ -39,33 +39,33 @@ python3 scripts/generate_traceability.py
 mkdocs build --strict
 ```
 
-## 6. CI policy
+## 6. CI ポリシー
 
-The quality pipeline fails when any of the following issues are detected:
+次の問題が検出された場合、品質パイプラインは失敗します。
 
-- duplicate or undefined requirement IDs
-- circular parent relationships
-- missing response measures for non-functional requirements
-- functional requirement descriptions without Given-When-Then language
-- broken internal or external links
-- Markdown or text linting issues that violate the repository style rules
+- 重複または未定義の要求 ID
+- 循環する親子関係
+- 非機能要求に対する応答測定の欠落
+- Given-When-Then 形式を使用しない機能要求の記述
+- 壊れた内部リンクまたは外部リンク
+- リポジトリのスタイル規約に違反する Markdown やテキストの lint 問題
 
-## 7. Release checklist
+## 7. リリースチェックリスト
 
-- All active requirements are represented in YAML.
-- Parent-child traceability is free of cycles.
-- Every requirement maps to either a feature scenario or a measurable quality scenario.
-- Documentation portal builds cleanly.
-- The generated traceability graph reflects the current requirement set.
+- すべてのアクティブな要求が YAML で表現されている。
+- 親子要件のトレーサビリティに循環がない。
+- 各要求が機能シナリオまたは測定可能な品質シナリオのいずれかに対応している。
+- ドキュメントポータルが正常にビルドできる。
+- 生成されたトレーサビリティ図が現在の要求セットを反映している。
 
-## 8. Quality scorecard
+## 8. 品質スコアカード
 
-The compliance review check should confirm the following thresholds:
+適合性レビューでは、以下の閾値を確認する必要があります。
 
-- 100% requirement ID uniqueness
-- 100% parent reference integrity
-- 100% verifiability for active requirements
-- 0 broken links in the documentation set
-- 0 Markdown lint violations
+- 要求 ID の一意性 100%
+- 親参照の整合性 100%
+- アクティブな要求の検証可能性 100%
+- ドキュメントセット内のリンク切れ 0 件
+- Markdown lint 違反 0 件
 
-This document is the operational policy for the ISO-aligned documentation system and should be updated whenever the requirement model evolves.
+この文書は ISO 準拠のドキュメントシステムの運用方針であり、要求モデルが進化するたびに更新する必要があります。
