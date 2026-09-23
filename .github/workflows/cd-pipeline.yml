@@ -125,7 +125,11 @@ jobs:
 
       - name: Run architecture fitness and synthetic ecosystem checks
         run: |
-          pnpm exec vitest run src/architecture.fitness.test.ts src/tests/syntheticTransaction.test.ts
+          pnpm exec vitest run src/architecture.fitness.test.ts src/tests/syntheticTransaction.test.ts \
+            --coverage.enabled \
+            --coverage.reporter=html \
+            --coverage.reporter=text-summary \
+            --coverage.reporter=json-summary
           pnpm run test:performance
 
       - name: Publish fitness report artifact
@@ -155,7 +159,40 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build-artifact
-          path: ./site
+          path: ./app-dist
+
+      - name: Download report artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: fitness-report
+          path: ./report-dist
+
+      - name: Prepare GitHub Pages bundle
+        run: |
+          mkdir -p ./pages
+          if [ -d ./app-dist ]; then cp -R ./app-dist/. ./pages/; fi
+          mkdir -p ./pages/reports/coverage
+          if [ -d ./report-dist/coverage ]; then cp -R ./report-dist/coverage/. ./pages/reports/coverage/; fi
+
+          cat > ./pages/reports/index.html <<'HTML'
+          <!doctype html>
+          <html lang="en">
+            <head>
+              <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1">
+              <title>CI Reports</title>
+            </head>
+            <body>
+              <main style="font-family: sans-serif; max-width: 48rem; margin: 2rem auto; padding: 0 1rem;">
+                <h1>CI Reports</h1>
+                <ul>
+                  <li><a href="../">Application</a></li>
+                  <li><a href="coverage/">Coverage Report</a></li>
+                </ul>
+              </main>
+            </body>
+          </html>
+          HTML
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
@@ -163,7 +200,7 @@ jobs:
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./site
+          path: ./pages
 
       - name: Deploy to GitHub Pages
         id: deployment
