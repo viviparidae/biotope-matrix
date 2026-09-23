@@ -7,6 +7,7 @@ export interface SocketLike {
 
 export function createCommandQueue(defaultSimulationId = 'default') {
   const pendingCommands: SimulationCommand[] = [];
+  const socketOpenState = globalThis.WebSocket?.OPEN ?? 1;
 
   const serializeCommand = (command: SimulationCommand): string => JSON.stringify({
     type: 'command',
@@ -18,14 +19,14 @@ export function createCommandQueue(defaultSimulationId = 'default') {
   return {
     pendingCommands,
     send(command: SimulationCommand, socket?: SocketLike): void {
-      if (socket?.readyState === WebSocket.OPEN) {
+      if (socket?.readyState === socketOpenState) {
         socket.send(serializeCommand(command));
         return;
       }
       pendingCommands.push(command);
     },
     flush(socket?: SocketLike): void {
-      while (pendingCommands.length > 0 && socket?.readyState === WebSocket.OPEN) {
+      while (pendingCommands.length > 0 && socket?.readyState === socketOpenState) {
         const command = pendingCommands.shift();
         if (!command) continue;
         socket.send(serializeCommand(command));
