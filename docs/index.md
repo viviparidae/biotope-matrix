@@ -16,4 +16,4 @@ This portal centralizes the project requirement model, quality gates, architectu
 
 ## CI policy
 
-Every pull request runs the documentation quality gate to validate YAML requirement integrity, text quality, markdown correctness, and site generation.
+Every pull request runs the documentation quality gate to validate YAML requirement integrity, text quality, Markdown correctness, and site generation.

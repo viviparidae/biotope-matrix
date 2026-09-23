@@ -48,7 +48,7 @@ The quality pipeline fails when any of the following issues are detected:
 - missing response measures for non-functional requirements
 - functional requirement descriptions without Given-When-Then language
 - broken internal or external links
-- markdown or text lint issues that violate the repository style rules
+- Markdown or text linting issues that violate the repository style rules
 
 ## 7. Release checklist
 
@@ -66,6 +66,6 @@ The compliance review check should confirm the following thresholds:
 - 100% parent reference integrity
 - 100% verifiability for active requirements
 - 0 broken links in the documentation set
-- 0 markdown lint violations
+- 0 Markdown lint violations
 
 This document is the operational policy for the ISO-aligned documentation system and should be updated whenever the requirement model evolves.

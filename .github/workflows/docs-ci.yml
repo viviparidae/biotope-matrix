@@ -48,7 +48,7 @@ jobs:
           pnpm install --frozen-lockfile
           python -m pip install --upgrade pip
           python -m pip install pyyaml mkdocs-material
-          pnpm add -D markdownlint-cli2 textlint @textlint/markdown textlint-rule-terminology
+          pnpm add -Dw markdownlint-cli2 textlint @textlint/textlint-plugin-markdown textlint-rule-terminology
 
       - name: Validate requirement model
         run: python3 scripts/validate_requirements.py
