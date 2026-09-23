@@ -1,39 +1,75 @@
-# プロダクト品質・プロジェクト品質ダッシュボード
+# 品質ダッシュボード
 
-## 概要
+## KPI サマリー
 
-現在のリリースは **needs attention** 状態で、総合品質スコアは **60.83/100** です。
+| 指標 | 現在値 | 目標 | 判定 |
+| --- | ---: | ---: | --- |
+| プロダクト品質スコア | 60.83/100 | 80.00 | FAIL |
+| テストカバレッジ | 44.05% | 75.00% | FAIL |
+| 要件カバー率 | 100.00% | 90.00% | PASS |
+| 静的解析エラー | 0 | 0 | PASS |
+| 未対策リスク | 2 | 0 | FAIL |
 
-| 指標 | 値 | 状態 |
-| --- | ---: | --- |
-| カバレッジ | 44.05% | 要注意 |
-| 要件トレーサビリティ | 100.00% | 健全 |
-| 要件数 | 7 | N/A |
-| 品質スコア | 60.83/100 | Needs attention |
+## テストピラミッド
 
-<div class="grid cards" markdown>
-
--   :material-check-circle:  **プロダクト品質**
-    - カバレッジ: 44.05%
-    - 状態: 要注意
-
--   :material-file-document-check: green  **プロジェクト品質**
-    - トレーサビリティ: 100.00%
-    - 状態: 健全
-
-</div>
+| レベル | 件数 | 構成比 | 通過状況 |
+| --- | ---: | ---: | --- |
+| Unit | 4 | 44.4% | 4 passed |
+| Integration | 2 | 22.2% | 2 passed |
+| Fitness / E2E | 3 | 33.3% | 3 passed |
 
 ```mermaid
-flowchart TD
-    A[CI 品質ゲート] --> B[プロダクト品質]
-    A --> C[プロジェクト品質]
-    B --> D[カバレッジ: 44.05%]
-    C --> E[トレーサビリティ: 100.00%]
-    D --> F[品質スコア: 60.83/100]
-    E --> F
+block-beta
+    columns 3
+    Unit["Unit
+4
+44.4%"]
+    Integration["Integration
+2
+22.2%"]
+    Fitness["Fitness/E2E
+3
+33.3%"]
 ```
 
-## カテゴリ別の要件カバレッジ
+## 品質トレンド
+
+```mermaid
+xychart-beta
+    title "Coverage & requirement trend"
+    x-axis ["B1"]
+    y-axis "Percent (%)" 0 --> 100
+    line ["Coverage", 44.0]
+    line ["Requirement", 100.0]
+```
+
+```mermaid
+xychart-beta
+    title "Static analysis and CI trend"
+    x-axis ["B1"]
+    y-axis "Issues / success rate" 0 --> 100
+    line ["Static issues", 0]
+    line ["CI success", 100.0]
+```
+
+## リスクマトリクス
+
+```mermaid
+quadrantChart
+    title "Unmitigated risk distribution"
+    x-axis "Low likelihood" --> "High likelihood"
+    y-axis "Low impact" --> "High impact"
+    quadrant-1 "Monitor"
+    quadrant-2 "Mitigate"
+    quadrant-3 "Accept"
+    quadrant-4 "Escalate"
+    "Simulation drift": [0.6, 0.8]
+    "Coverage regression": [0.7, 0.7]
+    "Requirement traceability gap": [0.4, 0.5]
+    "Deployment instability": [0.3, 0.6]
+```
+
+## 要件カテゴリ
 
 | カテゴリ | 件数 |
 | --- | ---: |
@@ -43,12 +79,13 @@ flowchart TD
 
 ## 品質メモ
 
-- カバレッジとトレーサビリティは、`docs/requirements/data` 配下の要求モデルと CI の実行結果から算出されています。
-- ダッシュボードは自動生成され、Material for MkDocs と GitHub Pages によって公開されます。
-- 次のリリースでは、最も低い指標を改善してから機能拡張を進めるのが望ましいです。
+- 要件カバー率とカバレッジは CI と要求モデルから継続的に評価されます。
+- 履歴データは reports/history.json に保存され、過去 10 ビルドを保持します。
+- 静的解析の警告が 0 でない場合は、次回デプロイ前に対策を完了してください。
 
-## 関連アーティファクト
+## 関連ファイル
 
-- JSON 出力: [../reports/quality-report.json](../reports/quality-report.json)
-- 要件モデル: [../requirements.md](../requirements.md)
-- ドキュメントガイド: [../DOCS_SYSTEM_GUIDE.md](../DOCS_SYSTEM_GUIDE.md)
+- [../reports/quality-report.json](../reports/quality-report.json)
+- [../reports/history.json](../reports/history.json)
+- [../requirements.md](../requirements.md)
+- [../test-strategy.md](../test-strategy.md)

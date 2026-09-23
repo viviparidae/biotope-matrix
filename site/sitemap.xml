@@ -1,43 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-         <loc>https://example.github.io/biotope-matrix/</loc>
+         <loc>https://viviparidae.github.io/biotope-matrix/</loc>
          <lastmod>2026-09-23</lastmod>
     </url>
     <url>
-         <loc>https://example.github.io/biotope-matrix/DOCS_SYSTEM_GUIDE/</loc>
+         <loc>https://viviparidae.github.io/biotope-matrix/DOCS_SYSTEM_GUIDE/</loc>
          <lastmod>2026-09-23</lastmod>
     </url>
     <url>
-         <loc>https://example.github.io/biotope-matrix/architecture/</loc>
+         <loc>https://viviparidae.github.io/biotope-matrix/QUALITY_DASHBOARD_SETUP/</loc>
          <lastmod>2026-09-23</lastmod>
     </url>
     <url>
-         <loc>https://example.github.io/biotope-matrix/coding-standards/</loc>
+         <loc>https://viviparidae.github.io/biotope-matrix/architecture/</loc>
          <lastmod>2026-09-23</lastmod>
     </url>
     <url>
-         <loc>https://example.github.io/biotope-matrix/implementation-roadmap/</loc>
+         <loc>https://viviparidae.github.io/biotope-matrix/coding-standards/</loc>
          <lastmod>2026-09-23</lastmod>
     </url>
     <url>
-         <loc>https://example.github.io/biotope-matrix/requirements/</loc>
+         <loc>https://viviparidae.github.io/biotope-matrix/implementation-roadmap/</loc>
          <lastmod>2026-09-23</lastmod>
     </url>
     <url>
-         <loc>https://example.github.io/biotope-matrix/test-strategy/</loc>
+         <loc>https://viviparidae.github.io/biotope-matrix/requirements/</loc>
          <lastmod>2026-09-23</lastmod>
     </url>
     <url>
-         <loc>https://example.github.io/biotope-matrix/requirements/overview/</loc>
+         <loc>https://viviparidae.github.io/biotope-matrix/test-strategy/</loc>
          <lastmod>2026-09-23</lastmod>
     </url>
     <url>
-         <loc>https://example.github.io/biotope-matrix/requirements/traceability/</loc>
+         <loc>https://viviparidae.github.io/biotope-matrix/dashboard/</loc>
          <lastmod>2026-09-23</lastmod>
     </url>
     <url>
-         <loc>https://example.github.io/biotope-matrix/requirements/data/predation/</loc>
+         <loc>https://viviparidae.github.io/biotope-matrix/requirements/overview/</loc>
+         <lastmod>2026-09-23</lastmod>
+    </url>
+    <url>
+         <loc>https://viviparidae.github.io/biotope-matrix/requirements/traceability/</loc>
+         <lastmod>2026-09-23</lastmod>
+    </url>
+    <url>
+         <loc>https://viviparidae.github.io/biotope-matrix/requirements/data/predation/</loc>
          <lastmod>2026-09-23</lastmod>
     </url>
 </urlset>
