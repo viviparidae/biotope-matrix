@@ -13,7 +13,10 @@
     "test:acceptance": "vitest run tests/acceptance",
     "test:performance": "vitest run tests/performance --pool=forks --poolOptions.forks.singleFork=true",
     "test:cucumber": "tsx node_modules/@cucumber/cucumber/bin/cucumber-js --import 'tests/steps/**/*.ts' 'tests/features/**/*.feature'",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "docs:validate": "python3 scripts/validate_requirements.py",
+    "docs:trace": "python3 scripts/generate_traceability.py",
+    "docs:build": "mkdocs build --strict"
   },
   "devDependencies": {
     "@cucumber/cucumber": "^12.9.0",

@@ -1,0 +1,100 @@
+requirements:
+  - id: REQ-SYS-001
+    title: Ecosystem behavior and observability
+    description: >-
+      Given a running ecosystem, when the simulation starts, then the observer can track population change, predation events, and resource dynamics through the interface and logs.
+    parents: []
+    category: functional
+    verification_method: Gherkin
+    design_refs:
+      - apps/worker/src/engine/simulation-engine.ts
+      - apps/frontend/src/main.ts
+    test_refs:
+      - tests/features/predation.feature
+      - tests/acceptance/requirements.acceptance.test.ts
+
+  - id: REQ-GEN-001
+    title: Grass generation and decay
+    description: >-
+      Given a grass patch with available capacity, when the environmental growth threshold is reached, then new grass is created; when the age exceeds the lifecycle threshold, then the grass withers and is removed from the simulation.
+    parents:
+      - REQ-SYS-001
+    category: functional
+    verification_method: Gherkin
+    design_refs:
+      - apps/worker/src/engine/simulation-engine.ts
+    test_refs:
+      - tests/features/predation.feature
+      - tests/acceptance/requirements.acceptance.test.ts
+
+  - id: REQ-HERB-001
+    title: Herbivore foraging and reproduction
+    description: >-
+      Given a herbivore near grass, when the herbivore reaches the foraging target and the energy threshold is satisfied, then it consumes food and may split into a new herbivore instance.
+    parents:
+      - REQ-SYS-001
+    category: functional
+    verification_method: Gherkin
+    design_refs:
+      - apps/worker/src/engine/simulation-engine.ts
+    test_refs:
+      - tests/features/predation.feature
+      - tests/acceptance/requirements.acceptance.test.ts
+
+  - id: REQ-PRED-001
+    title: Conditional predation
+    description: >-
+      Given a predator and a prey in the same region, when the predator is larger and the probability check succeeds, then the prey is removed and the predator gains energy according to the size-ratio, defense, and morphology rules.
+    parents:
+      - REQ-SYS-001
+    category: functional
+    verification_method: Gherkin
+    design_refs:
+      - apps/worker/src/engine/simulation-engine.ts
+    test_refs:
+      - tests/features/predation.feature
+      - tests/unit/predation.test.ts
+
+  - id: REQ-ARCH-001
+    title: Frame budget and architecture fitness
+    description: >-
+      Given the simulation is running, when the frame loop executes, then the engine must stay within the configured processing budget and avoid direct browser API dependencies in the core ECS logic.
+    parents:
+      - REQ-SYS-001
+    category: performance_efficiency
+    verification_method: Response Measure
+    response_measure: "95th percentile frame time <= 16.6 ms for the steady-state simulation loop"
+    design_refs:
+      - src/architecture.fitness.test.ts
+    test_refs:
+      - src/architecture.fitness.test.ts
+
+  - id: NFR-01
+    title: Performance efficiency for real-time simulation
+    description: >-
+      Given a population increase, when the simulation reaches the steady-state workload, then mean frame throughput stays at or above thirty frames per second and the 95th percentile remains below thirty-three milliseconds.
+    parents:
+      - REQ-SYS-001
+    category: performance_efficiency
+    verification_method: Response Measure
+    response_measure: "Average FPS >= 30 and p95 <= 33 ms under a representative simulation load"
+    design_refs:
+      - apps/worker/src/engine/simulation-engine.ts
+    test_refs:
+      - tests/performance/simulation.performance.test.ts
+
+  - id: NFR-02
+    title: Maintainability and traceability
+    description: >-
+      Given a requirement change, when a feature or test is updated, then the corresponding requirement ID, design references, and validation evidence remain traceable through the documentation portal and CI checks.
+    parents:
+      - REQ-SYS-001
+    category: maintainability
+    verification_method: Traceability Review
+    response_measure: "Requirement coverage rate >= 100% for all active IDs within the release branch"
+    design_refs:
+      - docs/requirements.md
+      - docs/test-strategy.md
+    test_refs:
+      - tests/acceptance/requirements.acceptance.test.ts
+      - src/architecture.fitness.test.ts

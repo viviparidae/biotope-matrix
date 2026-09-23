@@ -1,0 +1,46 @@
+site_name: Biotope Matrix Documentation Portal
+site_description: ISO 29148 / 25010-aligned requirements, traceability, and quality gates
+site_url: https://example.github.io/biotope-matrix/
+repo_url: https://github.com/example/biotope-matrix
+
+nav:
+  - Home: index.md
+  - Requirements:
+      - Overview: requirements/overview.md
+      - Data model: requirements/data/predation.md
+      - Traceability: requirements/traceability.md
+  - Architecture:
+      - System Overview: architecture.md
+      - Implementation Roadmap: implementation-roadmap.md
+  - Quality System:
+      - Guide: DOCS_SYSTEM_GUIDE.md
+      - Standards: requirements.md
+      - Testing Strategy: test-strategy.md
+      - Coding Standards: coding-standards.md
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.indexes
+    - navigation.expand
+    - content.code.copy
+    - search.suggest
+    - search.highlight
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - footnotes
+  - pymdownx.superfences
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed
+
+plugins:
+  - search
+
+watch:
+  - docs

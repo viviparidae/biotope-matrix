@@ -1,0 +1,1544 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="ISO 29148 / 25010-aligned requirements, traceability, and quality gates">
+      
+      
+      
+        <link rel="canonical" href="https://example.github.io/biotope-matrix/architecture/">
+      
+      
+        <link rel="prev" href="../requirements/traceability/">
+      
+      
+        <link rel="next" href="../implementation-roadmap/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>System Overview - Biotope Matrix Documentation Portal</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#pythagora-bios" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Biotope Matrix Documentation Portal" class="md-header__button md-logo" aria-label="Biotope Matrix Documentation Portal" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Biotope Matrix Documentation Portal
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              System Overview
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/example/biotope-matrix" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Biotope Matrix Documentation Portal" class="md-nav__button md-logo" aria-label="Biotope Matrix Documentation Portal" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Biotope Matrix Documentation Portal
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/example/biotope-matrix" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Requirements
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Requirements
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../requirements/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../requirements/data/predation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../requirements/traceability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Traceability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Overview
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 設計目標と前提
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. 設計目標と前提">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#brief-ui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BRIEF 原則（UI 設計におけるガイド）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-c4-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. C4 Model
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. C4 Model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-level-1-system-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Level 1: System Context
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-level-2-container" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Level 2: Container
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 実行時データフロー
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-ecs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. ECS設計
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. ECS設計">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 System実行順序
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. 配置、スケーリング、復旧
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. クライアント設計
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-adr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. ADR（簡易版）
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. ADR（簡易版）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adr-001-ecs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ADR-001: ECSを採用する
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr-002-websocketwebtransport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ADR-002: WebSocketを標準、WebTransportを拡張候補とする
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr-003-canvas-2dweb-audio-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ADR-003: Canvas 2DとWeb Audio APIを採用する
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr-004-kubernetes-operator-hpakeda" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ADR-004: Kubernetes Operator + HPA/KEDAを採用する
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr-005-leader-worker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ADR-005: Leader Workerをシミュレーション正本とする
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. 設計検証項目
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implementation-roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quality System
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Quality System
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DOCS_SYSTEM_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../requirements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Standards
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../test-strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing Strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../coding-standards/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coding Standards
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 設計目標と前提
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. 設計目標と前提">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#brief-ui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BRIEF 原則（UI 設計におけるガイド）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-c4-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. C4 Model
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. C4 Model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-level-1-system-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Level 1: System Context
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-level-2-container" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Level 2: Container
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 実行時データフロー
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-ecs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. ECS設計
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. ECS設計">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 System実行順序
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. 配置、スケーリング、復旧
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. クライアント設計
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-adr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. ADR（簡易版）
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. ADR（簡易版）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adr-001-ecs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ADR-001: ECSを採用する
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr-002-websocketwebtransport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ADR-002: WebSocketを標準、WebTransportを拡張候補とする
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr-003-canvas-2dweb-audio-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ADR-003: Canvas 2DとWeb Audio APIを採用する
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr-004-kubernetes-operator-hpakeda" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ADR-004: Kubernetes Operator + HPA/KEDAを採用する
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr-005-leader-worker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ADR-005: Leader Workerをシミュレーション正本とする
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. 設計検証項目
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="pythagora-bios">アーキテクチャ設計書（pythagora-bios）</h1>
+<h2 id="1">1. 設計目標と前提</h2>
+<p>要求仕様の <code>F-01</code>〜<code>F-10</code> と <code>NFR-01</code>〜<code>NFR-12</code>を実現する。観察者はブラウザで状態を購読し、シミュレーションの正本はWorker Podが保持する。</p>
+<h3 id="brief-ui">BRIEF 原則（UI 設計におけるガイド）</h3>
+<p>UI は微細な見た目の要求を記述せず、ユーザーにとって意味のある振る舞いと状態だけを扱う。実装詳細や装飾の細部は設計書で調整し、要求書には必要最低限の観測可能な情報だけを残す。</p>
+<ul>
+<li>画面上で分かる状態: 個体数、草量、環境（明るさ／気温）</li>
+<li>画面上で分かる操作: 設定変更、個体追加、リセット</li>
+<li>記載しない内容: px 単位の詳細レイアウト、色の逐一指定、コンポーネントの細粒度仕様</li>
+</ul>
+<p>この原則により、UI は「何が見えるか」と「何が変化したか」を中心に設計し、実装の見た目や詳細設計に過剰に縛られない。</p>
+<ul>
+<li>1シミュレーションIDにつき書き込み権を持つLeader Workerは1つとする。</li>
+<li>固定タイムステップ（既定60Hz）と描画フレームレートを分離する。</li>
+<li>Workerはイベントをサーバー時刻と連番で確定し、クライアントはスナップショットを購読する。</li>
+<li>未指定閾値はバージョン付きConfigMapで管理する。</li>
+</ul>
+<h2 id="2-c4-model">2. C4 Model</h2>
+<h3 id="21-level-1-system-context">2.1 Level 1: System Context</h3>
+<div class="highlight"><pre><span></span><code>flowchart LR
+    observer[観察者\nWebブラウザ]
+    bios[pythagora-bios\n生態系シミュレーション]
+    operator[運用者\nKubernetes管理]
+    cluster[Kubernetesクラスタ]
+    config[環境設定\nCRD / ConfigMap]
+    observer --&gt;|状態購読・音声イベント| bios
+    operator --&gt;|閾値・環境値| config
+    config --&gt;|明るさ・温度・湿度| bios
+    operator --&gt;|監視・スケール設定| cluster
+    cluster --&gt;|Worker実行・復旧| bios
+</code></pre></div>
+<h3 id="22-level-2-container">2.2 Level 2: Container</h3>
+<div class="highlight"><pre><span></span><code>flowchart TB
+    browser[Frontend\nCanvas / Web Audio]
+    gateway[Realtime Gateway\n認証・購読・制限]
+    worker[Simulation Worker Pod\nECS World + Rule Systems]
+    operator[K8s Operator\nCRD監視・設定配布]
+    scaler[HPA / KEDA]
+    store[(State Store\nチェックポイント・イベント)]
+    metrics[Metrics / Logs]
+    k8s[Kubernetes API]
+    env[Environment CRD / ConfigMap]
+    browser &lt;--&gt;|WSS / WebTransport| gateway
+    gateway &lt;--&gt;|イベント・スナップショット| worker
+    worker --&gt; store
+    worker --&gt; metrics
+    env --&gt; operator
+    operator &lt;--&gt;|検証・適用| k8s
+    operator --&gt; worker
+    metrics --&gt; scaler
+    scaler --&gt; k8s
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>コンテナ</th>
+<th>責務</th>
+<th>状態</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Frontend</td>
+<td>Canvas描画、補間、音声合成</td>
+<td>最新スナップショット</td>
+</tr>
+<tr>
+<td>Realtime Gateway</td>
+<td>認証、購読、レート制限、配信</td>
+<td>接続の一時状態</td>
+</tr>
+<tr>
+<td>Simulation Worker</td>
+<td>ECS更新、ルール、イベント、チェックポイント</td>
+<td>シミュレーション正本</td>
+</tr>
+<tr>
+<td>K8s Operator</td>
+<td>CRD/ConfigMap検証、設定配布、再起動調整</td>
+<td>適用状態</td>
+</tr>
+<tr>
+<td>State Store</td>
+<td>チェックポイント、監査用イベントログ</td>
+<td>永続状態</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3">3. 実行時データフロー</h2>
+<div class="highlight"><pre><span></span><code>sequenceDiagram
+    participant C as Frontend
+    participant G as Gateway
+    participant W as Leader Worker
+    participant S as State Store
+    participant K as K8s Operator
+    C-&gt;&gt;G: subscribe(simulationId, lastSequence)
+    G-&gt;&gt;W: 購読登録
+    W--&gt;&gt;C: snapshot(sequence, entities, terrain, environment)
+    loop 固定タイムステップ
+        W-&gt;&gt;W: ECS systemsを順序実行
+        W-&gt;&gt;W: イベントを連番付きで確定
+        W--&gt;&gt;G: 差分またはスナップショット
+        G--&gt;&gt;C: 描画データ + audio events
+    end
+    K-&gt;&gt;W: environment(version, brightness, temperature, humidity)
+    W-&gt;&gt;W: 次のtick境界で適用
+    W-&gt;&gt;S: 定期チェックポイント
+    C-&gt;&gt;G: reconnect(lastSequence)
+    G--&gt;&gt;C: 欠落差分または最新スナップショット
+</code></pre></div>
+<p>通常は差分イベントを配信し、再接続時または差分が過多の場合は完全スナップショットを返す。Gatewayは個体状態を書き換えず、正本をWorkerへ集約する。</p>
+<h2 id="4-ecs">4. ECS設計</h2>
+<p>Entityは再利用可能な整数ID、Componentは型ごとのStructure of Arrays（SoA）で保持する。</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>フィールド例</th>
+<th>対象</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Position</td>
+<td><code>x</code>, <code>y</code>, <code>previousX</code>, <code>previousY</code></td>
+<td>全Entity</td>
+</tr>
+<tr>
+<td>Velocity</td>
+<td><code>x</code>, <code>y</code>, <code>baseSpeed</code></td>
+<td>個体、水流</td>
+</tr>
+<tr>
+<td>Species</td>
+<td><code>kind</code>, <code>colorVariant</code>, <code>blinkPhase</code></td>
+<td>草食、肉食、ゾンビ</td>
+</tr>
+<tr>
+<td>Energy</td>
+<td><code>value</code>, <code>metabolicRate</code></td>
+<td>個体</td>
+</tr>
+<tr>
+<td>Perception</td>
+<td><code>baseRange</code>, <code>effectiveRange</code></td>
+<td>個体</td>
+</tr>
+<tr>
+<td>Life</td>
+<td><code>bornAt</code>, <code>expiresAt</code>, <code>alive</code></td>
+<td>草、個体、死骸</td>
+</tr>
+<tr>
+<td>Mutation</td>
+<td><code>speedFactor</code>, <code>sightFactor</code></td>
+<td>個体</td>
+</tr>
+<tr>
+<td>Corpse / Decomposer</td>
+<td><code>decomposition</code>, <code>nutrientYield</code>, <code>density</code></td>
+<td>死骸、分解者</td>
+</tr>
+<tr>
+<td>TerrainCell</td>
+<td><code>kind</code>, <code>fertility</code>, <code>eventHeat</code></td>
+<td>グリッドセル</td>
+</tr>
+<tr>
+<td>EventTag</td>
+<td><code>type</code>, <code>sequence</code>, <code>sourceId</code></td>
+<td>今tickのイベント</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code>World
+  positions: SoA { x[], y[], previousX[], previousY[] }
+  velocities: SoA { x[], y[], baseSpeed[] }
+  energies: SoA { value[], metabolicRate[] }
+  perceptions: SoA { baseRange[], effectiveRange[] }
+  lifecycles: SoA { bornAt[], expiresAt[], alive[] }
+  terrain: Grid&lt;TerrainCell&gt;
+  events: RingBuffer&lt;Event&gt;
+  freeIds: Stack&lt;EntityId&gt;
+</code></pre></div>
+<p>削除は<code>alive=false</code>と削除キューで記録し、tick末尾にSwap-and-Popする。イベントには世代番号を付け、古いEntity参照を無効化する。Spatial Hashで近傍探索を局所化し、描画には必要なComponentだけをPacked Snapshotへ変換する。</p>
+<h3 id="41-system">4.1 System実行順序</h3>
+<div class="highlight"><pre><span></span><code>flowchart LR
+    input[Config・時計] --&gt; perceive[Perception]
+    perceive --&gt; intent[Behavior\n採餌・追尾・徘徊]
+    intent --&gt; move[Movement\n速度・地形・壁反射]
+    move --&gt; interact[Interaction\n捕食・接触・分裂]
+    interact --&gt; lifecycle[Lifecycle\n消費・枯死・死亡]
+    lifecycle --&gt; decompose[Decomposition\n栄養・分解者]
+    decompose --&gt; terrain[Terrain\n砂漠・湿地・山・クレーター]
+    terrain --&gt; trigger[Event\n繁殖・災害・ゾンビ]
+    trigger --&gt; emit[Snapshot / Event Emitter]
+    emit --&gt; cleanup[Command Buffer・計測]
+    cleanup --&gt; perceive
+</code></pre></div>
+<p>各Systemは直接Entityを生成・削除せずCommand Bufferへ命令する。InteractionSystemは対象を予約し、tick末尾に一度だけ確定する。tickごとに状態ハッシュ、個体数、主要イベントを記録する。</p>
+<h2 id="5">5. 配置、スケーリング、復旧</h2>
+<div class="highlight"><pre><span></span><code>flowchart TB
+    ingress[Ingress / Service] --&gt; gateway[Gateway Deployment]
+    gateway --&gt; workers[Worker StatefulSet\nSimulation Shards]
+    workers --&gt; leader[Leader Lease]
+    workers --&gt; store[(Persistent State Store)]
+    workers --&gt; prometheus[Prometheus]
+    prometheus --&gt; hpa[HPA / KEDA]
+    hpa --&gt; workers
+    config[BiotopeEnvironment CRD] --&gt; operator[Biotope Operator]
+    operator --&gt; workers
+</code></pre></div>
+<ul>
+<li>シミュレーションIDをShardキーとし、1Shardを1Leader Workerが処理する。</li>
+<li>CPU負荷と個体数をメトリクス化し、80%閾値でHPA/KEDAを起動する。</li>
+<li>Leader Leaseの失効後にのみ昇格し、同じShardを二重実行しない。</li>
+<li>Worker停止時はチェックポイントとイベント連番から再開する。</li>
+<li>Operatorはschema検証後、<code>environmentVersion</code>を増加させ、次tick境界で全Workerへ適用する。</li>
+</ul>
+<h2 id="6">6. クライアント設計</h2>
+<p>受信スナップショットの前後を補間してCanvasへ描画する。生物は1x1〜3x3px、変異は色相・点滅・形状の差で表現し、色だけに依存しない。音声層はイベントを左右パンとピッチへ変換し、安定時は和音、繁殖・災害時は速い不協和音へ遷移する。AudioContextの開始要求や権限拒否があっても描画は継続する。</p>
+<h2 id="7-adr">7. ADR（簡易版）</h2>
+<h3 id="adr-001-ecs">ADR-001: ECSを採用する</h3>
+<ul>
+<li><strong>Context:</strong> 数千体と短命Entityを毎tick更新する。</li>
+<li><strong>Decision:</strong> Entity ID、SoA Component、System順序、Command Bufferを使う。</li>
+<li><strong>Rationale:</strong> 密な走査でキャッシュ効率を高め、GC負荷を避ける。</li>
+<li><strong>Trade-off:</strong> 動的型追加とデバッグの可読性が下がるため、境界とイベントログで補う。</li>
+</ul>
+<h3 id="adr-002-websocketwebtransport">ADR-002: WebSocketを標準、WebTransportを拡張候補とする</h3>
+<ul>
+<li><strong>Context:</strong> 低遅延配信とブラウザ互換性が必要。</li>
+<li><strong>Decision:</strong> 初期はWSS WebSocket、WebTransportはAdapter経由とする。</li>
+<li><strong>Rationale:</strong> WebSocketの成熟した順序付きストリームで観察用途を満たす。</li>
+<li><strong>Trade-off:</strong> 多重ストリームの柔軟性が低いため、Adapterで置換範囲を限定する。</li>
+</ul>
+<h3 id="adr-003-canvas-2dweb-audio-api">ADR-003: Canvas 2DとWeb Audio APIを採用する</h3>
+<ul>
+<li><strong>Context:</strong> 極小ドットの大量描画とイベント由来の音声合成が必要。</li>
+<li><strong>Decision:</strong> Canvas 2DとWeb Audio APIを使う。</li>
+<li><strong>Rationale:</strong> DOMより大量描画に適し、音声ファイルよりイベント合成に合う。</li>
+<li><strong>Trade-off:</strong> 高密度イベントでは音声を量子化・合成し上限を設ける。</li>
+</ul>
+<h3 id="adr-004-kubernetes-operator-hpakeda">ADR-004: Kubernetes Operator + HPA/KEDAを採用する</h3>
+<ul>
+<li><strong>Context:</strong> CPUと個体数でWorkerを増減し、環境値を全Podへ配布する。</li>
+<li><strong>Decision:</strong> CRDをOperatorが検証・配布し、HPA/KEDAがメトリクスを利用する。</li>
+<li><strong>Rationale:</strong> ドメイン設定とPodライフサイクルを宣言的に統合できる。</li>
+<li><strong>Trade-off:</strong> Kubernetes依存が増えるため、ローカルでは同じスキーマのモックを使う。</li>
+</ul>
+<h3 id="adr-005-leader-worker">ADR-005: Leader Workerをシミュレーション正本とする</h3>
+<ul>
+<li><strong>Context:</strong> 複数Podの同時更新はイベント順序を競合させる。</li>
+<li><strong>Decision:</strong> ShardごとにLeaderを1つ置き、他Podは購読または候補とする。</li>
+<li><strong>Rationale:</strong> 単一書き込み元と連番付きイベントで二重計上を抑える。</li>
+<li><strong>Trade-off:</strong> Leaderがボトルネックになり得るため、Shard分割と復旧で拡張する。</li>
+</ul>
+<h2 id="8">8. 設計検証項目</h2>
+<ul>
+<li><code>F-01</code>〜<code>F-09</code>を固定乱数seedの決定的ECSテストで検証する。</li>
+<li><code>F-10</code>と<code>NFR-05</code>〜<code>NFR-07</code>をローカルKubernetesで検証する。</li>
+<li><code>NFR-01</code>を個体数別の負荷試験で測定する。</li>
+<li><code>NFR-06</code>と<code>NFR-12</code>を設定バージョン、イベント連番、状態ハッシュで比較する。</li>
+<li><code>NFR-08</code>と<code>NFR-11</code>を音声拒否、低性能端末、色覚差の条件で確認する。</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.indexes", "navigation.expand", "content.code.copy", "search.suggest", "search.highlight"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
