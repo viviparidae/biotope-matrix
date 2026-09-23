@@ -22,6 +22,7 @@ UI は微細な見た目の要求を記述せず、ユーザーにとって意�
 ## 2. C4 Model
 
 ### 2.1 Level 1: System Context
+
 ```mermaid
 flowchart LR
     observer[観察者\nWebブラウザ]
@@ -37,6 +38,7 @@ flowchart LR
 ```
 
 ### 2.2 Level 2: Container
+
 ```mermaid
 flowchart TB
     browser[Frontend\nCanvas / Web Audio]
@@ -126,6 +128,7 @@ World
 削除は`alive=false`と削除キューで記録し、tick末尾にSwap-and-Popする。イベントには世代番号を付け、古いEntity参照を無効化する。Spatial Hashで近傍探索を局所化し、描画には必要なComponentだけをPacked Snapshotへ変換する。
 
 ### 4.1 System実行順序
+
 ```mermaid
 flowchart LR
     input[Config・時計] --> perceive[Perception]
