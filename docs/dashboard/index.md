@@ -1,54 +1,54 @@
-# Product Quality & Project Quality Dashboard
+# プロダクト品質・プロジェクト品質ダッシュボード
 
-## Executive summary
+## 概要
 
-The current release is in **needs attention** status with an overall quality score of **60.83/100**.
+現在のリリースは **needs attention** 状態で、総合品質スコアは **60.83/100** です。
 
-| Metric | Value | Status |
+| 指標 | 値 | 状態 |
 | --- | ---: | --- |
-| Statement coverage | 44.05% | Needs attention |
-| Requirement traceability | 100.00% | Healthy |
-| Total requirements | 7 | N/A |
-| Quality score | 60.83/100 | Needs attention |
+| カバレッジ | 44.05% | 要注意 |
+| 要件トレーサビリティ | 100.00% | 健全 |
+| 要件数 | 7 | N/A |
+| 品質スコア | 60.83/100 | Needs attention |
 
 <div class="grid cards" markdown>
 
--   :material-check-circle:  **Product quality**
-    - Coverage: 44.05%
-    - Status: Needs attention
+-   :material-check-circle:  **プロダクト品質**
+    - カバレッジ: 44.05%
+    - 状態: 要注意
 
--   :material-file-document-check: green  **Project quality**
-    - Traceability: 100.00%
-    - Status: Healthy
+-   :material-file-document-check: green  **プロジェクト品質**
+    - トレーサビリティ: 100.00%
+    - 状態: 健全
 
 </div>
 
 ```mermaid
 flowchart TD
-    A[CI Quality Gate] --> B[Product Quality]
-    A --> C[Project Quality]
-    B --> D[Coverage: 44.05%]
-    C --> E[Traceability: 100.00%]
-    D --> F[Quality Score: 60.83/100]
+    A[CI 品質ゲート] --> B[プロダクト品質]
+    A --> C[プロジェクト品質]
+    B --> D[カバレッジ: 44.05%]
+    C --> E[トレーサビリティ: 100.00%]
+    D --> F[品質スコア: 60.83/100]
     E --> F
 ```
 
-## Requirement coverage by category
+## カテゴリ別の要件カバレッジ
 
-| Category | Count |
+| カテゴリ | 件数 |
 | --- | ---: |
 | functional | 4 |
 | maintainability | 1 |
 | performance_efficiency | 2 |
 
-## Quality notes
+## 品質メモ
 
-- Coverage and traceability are measured from the live CI artifacts and the requirement model under `docs/requirements/data`.
-- Dashboard generation is automatic and is designed to be published via GitHub Pages with Material for MkDocs.
-- The next release should focus on raising the lowest-scoring area before broadening feature scope.
+- カバレッジとトレーサビリティは、`docs/requirements/data` 配下の要求モデルと CI の実行結果から算出されています。
+- ダッシュボードは自動生成され、Material for MkDocs と GitHub Pages によって公開されます。
+- 次のリリースでは、最も低い指標を改善してから機能拡張を進めるのが望ましいです。
 
-## Related artifacts
+## 関連アーティファクト
 
-- JSON payload: [../reports/quality-report.json](../reports/quality-report.json)
-- Requirement model: [../requirements.md](../requirements.md)
-- Documentation guide: [../DOCS_SYSTEM_GUIDE.md](../DOCS_SYSTEM_GUIDE.md)
+- JSON 出力: [../reports/quality-report.json](../reports/quality-report.json)
+- 要件モデル: [../requirements.md](../requirements.md)
+- ドキュメントガイド: [../DOCS_SYSTEM_GUIDE.md](../DOCS_SYSTEM_GUIDE.md)

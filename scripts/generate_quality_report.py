@@ -127,58 +127,58 @@ def main() -> None:
     quality_state = 'Healthy' if overall_score >= 80 else 'Needs attention'
     status_color = 'green' if overall_score >= 80 else 'orange'
 
-    dashboard_md = f'''# Product Quality & Project Quality Dashboard
+    dashboard_md = f'''# プロダクト品質・プロジェクト品質ダッシュボード
 
-## Executive summary
+## 概要
 
-The current release is in **{quality_state.lower()}** status with an overall quality score of **{overall_score:.2f}/100**.
+現在のリリースは **{quality_state.lower()}** 状態で、総合品質スコアは **{overall_score:.2f}/100** です。
 
-| Metric | Value | Status |
+| 指標 | 値 | 状態 |
 | --- | ---: | --- |
-| Statement coverage | {coverage.get('coverage_pct', 0.0):.2f}% | {'Healthy' if coverage.get('coverage_pct', 0.0) >= 75 else 'Needs attention'} |
-| Requirement traceability | {requirement.get('traceability_pct', 0.0):.2f}% | {'Healthy' if requirement.get('traceability_pct', 0.0) >= 90 else 'Needs attention'} |
-| Total requirements | {requirement.get('total_requirements', 0)} | N/A |
-| Quality score | {overall_score:.2f}/100 | {quality_state} |
+| カバレッジ | {coverage.get('coverage_pct', 0.0):.2f}% | {'健全' if coverage.get('coverage_pct', 0.0) >= 75 else '要注意'} |
+| 要件トレーサビリティ | {requirement.get('traceability_pct', 0.0):.2f}% | {'健全' if requirement.get('traceability_pct', 0.0) >= 90 else '要注意'} |
+| 要件数 | {requirement.get('total_requirements', 0)} | N/A |
+| 品質スコア | {overall_score:.2f}/100 | {quality_state} |
 
 <div class="grid cards" markdown>
 
--   :material-check-circle:{' green' if overall_score >= 80 else ''}  **Product quality**
-    - Coverage: {coverage.get('coverage_pct', 0.0):.2f}%
-    - Status: {'Healthy' if coverage.get('coverage_pct', 0.0) >= 75 else 'Needs attention'}
+-   :material-check-circle:{' green' if overall_score >= 80 else ''}  **プロダクト品質**
+    - カバレッジ: {coverage.get('coverage_pct', 0.0):.2f}%
+    - 状態: {'健全' if coverage.get('coverage_pct', 0.0) >= 75 else '要注意'}
 
--   :material-file-document-check:{' green' if requirement.get('traceability_pct', 0.0) >= 90 else ''}  **Project quality**
-    - Traceability: {requirement.get('traceability_pct', 0.0):.2f}%
-    - Status: {'Healthy' if requirement.get('traceability_pct', 0.0) >= 90 else 'Needs attention'}
+-   :material-file-document-check:{' green' if requirement.get('traceability_pct', 0.0) >= 90 else ''}  **プロジェクト品質**
+    - トレーサビリティ: {requirement.get('traceability_pct', 0.0):.2f}%
+    - 状態: {'健全' if requirement.get('traceability_pct', 0.0) >= 90 else '要注意'}
 
 </div>
 
 ```mermaid
 flowchart TD
-    A[CI Quality Gate] --> B[Product Quality]
-    A --> C[Project Quality]
-    B --> D[Coverage: {coverage.get('coverage_pct', 0.0):.2f}%]
-    C --> E[Traceability: {requirement.get('traceability_pct', 0.0):.2f}%]
-    D --> F[Quality Score: {overall_score:.2f}/100]
+    A[CI 品質ゲート] --> B[プロダクト品質]
+    A --> C[プロジェクト品質]
+    B --> D[カバレッジ: {coverage.get('coverage_pct', 0.0):.2f}%]
+    C --> E[トレーサビリティ: {requirement.get('traceability_pct', 0.0):.2f}%]
+    D --> F[品質スコア: {overall_score:.2f}/100]
     E --> F
 ```
 
-## Requirement coverage by category
+## カテゴリ別の要件カバレッジ
 
-| Category | Count |
+| カテゴリ | 件数 |
 | --- | ---: |
 {chr(10).join(f'| {category} | {count} |' for category, count in sorted(requirement.get('categories', {}).items())) or '| N/A | 0 |'}
 
-## Quality notes
+## 品質メモ
 
-- Coverage and traceability are measured from the live CI artifacts and the requirement model under `docs/requirements/data`.
-- Dashboard generation is automatic and is designed to be published via GitHub Pages with Material for MkDocs.
-- The next release should focus on raising the lowest-scoring area before broadening feature scope.
+- カバレッジとトレーサビリティは、`docs/requirements/data` 配下の要求モデルと CI の実行結果から算出されています。
+- ダッシュボードは自動生成され、Material for MkDocs と GitHub Pages によって公開されます。
+- 次のリリースでは、最も低い指標を改善してから機能拡張を進めるのが望ましいです。
 
-## Related artifacts
+## 関連アーティファクト
 
-- JSON payload: [../reports/quality-report.json](../reports/quality-report.json)
-- Requirement model: [../requirements.md](../requirements.md)
-- Documentation guide: [../DOCS_SYSTEM_GUIDE.md](../DOCS_SYSTEM_GUIDE.md)
+- JSON 出力: [../reports/quality-report.json](../reports/quality-report.json)
+- 要件モデル: [../requirements.md](../requirements.md)
+- ドキュメントガイド: [../DOCS_SYSTEM_GUIDE.md](../DOCS_SYSTEM_GUIDE.md)
 '''
 
     (DASHBOARD_DIR / 'index.md').write_text(dashboard_md, encoding='utf-8')
