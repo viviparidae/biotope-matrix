@@ -46,10 +46,18 @@ export interface RefugiumGuard {
 
 export function applySustainabilityPressure(metrics: PopulationHistoryEntry): SustainabilityPressure {
   const herbivoreRisk = Math.max(0, 20 - metrics.herbivores);
-  const herbivoreStealthBoost = herbivoreRisk > 0 ? 0.3 + herbivoreRisk * 0.04 : 0;
-  const predatorSightReduction = herbivoreRisk > 0 ? 0.2 + herbivoreRisk * 0.03 : 0;
-  const predatorSpeedReduction = herbivoreRisk > 0 ? 0.18 + herbivoreRisk * 0.025 : 0;
-  const grassSpawnFloor = Math.max(8, 12 + herbivoreRisk * 0.6 + Math.max(0, 8 - metrics.carnivores));
+  const predatorCrowding = Math.max(0, metrics.carnivores - 12);
+  const grassScarcity = Math.max(0, 25 - metrics.grass);
+  const herbivoreStealthBoost = herbivoreRisk > 0 || predatorCrowding > 0
+    ? 0.3 + herbivoreRisk * 0.04 + predatorCrowding * 0.05
+    : 0;
+  const predatorSightReduction = herbivoreRisk > 0 || predatorCrowding > 0
+    ? 0.24 + herbivoreRisk * 0.035 + predatorCrowding * 0.07
+    : 0;
+  const predatorSpeedReduction = herbivoreRisk > 0 || predatorCrowding > 0
+    ? 0.2 + herbivoreRisk * 0.03 + predatorCrowding * 0.06
+    : 0;
+  const grassSpawnFloor = Math.max(8, 12 + herbivoreRisk * 0.6 + grassScarcity * 0.7 + Math.max(0, 8 - metrics.carnivores));
 
   return {
     herbivoreStealthBoost,
@@ -64,12 +72,13 @@ export function applySustainabilityPressure(metrics: PopulationHistoryEntry): Su
 
 export function buildRefugiumGuard(metrics: PopulationHistoryEntry): RefugiumGuard {
   const herbivoreShortfall = Math.max(0, 20 - metrics.herbivores);
-  const refugeActive = metrics.herbivores <= 20 || metrics.grass <= 25;
+  const predatorCrowding = Math.max(0, metrics.carnivores - 12);
+  const refugeActive = metrics.herbivores <= 20 || metrics.grass <= 25 || (predatorCrowding > 0 && metrics.herbivores < 40);
   return {
     protectedSizeLimit: 1,
-    grassSpawnFloor: Math.max(10, 12 + herbivoreShortfall * 0.7 + Math.max(0, 7 - metrics.carnivores)),
+    grassSpawnFloor: Math.max(10, 12 + herbivoreShortfall * 0.7 + predatorCrowding * 0.8 + Math.max(0, 7 - metrics.carnivores)),
     refugeActive,
-    biomassBuffer: Math.max(0, herbivoreShortfall * 2 + (20 - metrics.carnivores)),
+    biomassBuffer: Math.max(0, herbivoreShortfall * 2 + predatorCrowding * 3 + (20 - metrics.carnivores)),
   };
 }
 
@@ -122,7 +131,7 @@ export function applySustainabilityRulesSystem(
 ): void {
   const herbivoreCount = world.count(Species.Herbivore);
   const carnivoreCount = world.count(Species.Carnivore);
-  const safetyPressure = herbivoreCount <= resilience.safetyThreshold;
+  const safetyPressure = herbivoreCount <= resilience.safetyThreshold || carnivoreCount >= 18;
 
   for (let entity = 0; entity < world.flags.length; entity += 1) {
     if ((world.flags[entity] & EntityFlags.Alive) === 0) continue;
@@ -139,9 +148,9 @@ export function applySustainabilityRulesSystem(
       }
     }
 
-    if (species === Species.Carnivore && safetyPressure) {
-      const speedReduction = Math.max(0.5, 1 - resilience.predatorSpeedReduction);
-      const sightReduction = Math.max(0.5, 1 - resilience.predatorSightReduction);
+    if (species === Species.Carnivore) {
+      const speedReduction = safetyPressure ? Math.max(0.5, 1 - resilience.predatorSpeedReduction) : 1;
+      const sightReduction = safetyPressure ? Math.max(0.5, 1 - resilience.predatorSightReduction) : 1;
       world.speed[entity] *= speedReduction;
       world.sight[entity] *= sightReduction;
       world.baseSpeed[entity] *= speedReduction;
@@ -152,7 +161,7 @@ export function applySustainabilityRulesSystem(
     }
   }
 
-  if (herbivoreCount <= resilience.safetyThreshold && carnivoreCount > 0) {
+  if ((herbivoreCount <= resilience.safetyThreshold || carnivoreCount >= 18) && carnivoreCount > 0) {
     terrainGrid.kinds.fill(TerrainKind.Wetland);
   }
 
@@ -180,6 +189,27 @@ export function enforcePopulationBoundsSystem(
   if (carnivores < CARNIVORE_MIN_POPULATION) {
     for (let spawn = 0; spawn < CARNIVORE_MIN_POPULATION - carnivores; spawn += 1) {
       world.queueSpawn(Species.Carnivore, Math.random() * config.width, Math.random() * config.height, MAX_ENERGY, config.carnivoreSpeed, CARNIVORE_SIGHT);
+    }
+  }
+
+  const herbivoreSafetyCap = 150;
+  const carnivoreSafetyCap = 70;
+
+  if (herbivores > herbivoreSafetyCap) {
+    let excess = herbivores - herbivoreSafetyCap;
+    for (let entity = 0; entity < world.flags.length && excess > 0; entity += 1) {
+      if ((world.flags[entity] & EntityFlags.Alive) === 0 || world.species[entity] !== Species.Herbivore) continue;
+      world.queueDeath(entity, 1, 1);
+      excess -= 1;
+    }
+  }
+
+  if (carnivores > carnivoreSafetyCap) {
+    let excess = carnivores - carnivoreSafetyCap;
+    for (let entity = 0; entity < world.flags.length && excess > 0; entity += 1) {
+      if ((world.flags[entity] & EntityFlags.Alive) === 0 || world.species[entity] !== Species.Carnivore) continue;
+      world.queueDeath(entity, 1, 1);
+      excess -= 1;
     }
   }
 
