@@ -121,11 +121,12 @@ describe('UI 操作', () => {
     // Arrange
     const queue = createCommandQueue();
     const socket = { readyState: 0, send: vi.fn() } as unknown as WebSocket & { send: ReturnType<typeof vi.fn> };
+    const openState = globalThis.WebSocket?.OPEN ?? 1;
 
     // Act
     queue.send({ type: 'update-config', key: 'maxGrass', value: 120 }, socket);
     queue.send({ type: 'spawn', species: Species.Herbivore, count: 10 }, socket);
-    Object.defineProperty(socket, 'readyState', { value: WebSocket.OPEN, configurable: true });
+    Object.defineProperty(socket, 'readyState', { value: openState, configurable: true });
     queue.flush(socket);
 
     // Assert
@@ -138,12 +139,13 @@ describe('UI 操作', () => {
     // Arrange
     const queue = createCommandQueue();
     const socket = { readyState: 0, send: vi.fn() } as unknown as WebSocket & { send: ReturnType<typeof vi.fn> };
+    const openState = globalThis.WebSocket?.OPEN ?? 1;
 
     // Act
     queue.send({ type: 'update-config', key: 'grassSpawnInterval', value: 0.5 }, socket);
     queue.send({ type: 'update-config', key: 'maxGrass', value: 150 }, socket);
     queue.send({ type: 'spawn', species: Species.Carnivore, count: 1 }, socket);
-    Object.defineProperty(socket, 'readyState', { value: WebSocket.OPEN, configurable: true });
+    Object.defineProperty(socket, 'readyState', { value: openState, configurable: true });
     queue.flush(socket);
 
     // Assert
