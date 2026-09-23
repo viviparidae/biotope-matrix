@@ -1,10 +1,11 @@
 site_name: Biotope Matrix Documentation Portal
 site_description: ISO 29148 / 25010-aligned requirements, traceability, and quality gates
-site_url: https://example.github.io/biotope-matrix/
-repo_url: https://github.com/example/biotope-matrix
+site_url: https://viviparidae.github.io/biotope-matrix/
+repo_url: https://github.com/viviparidae/biotope-matrix
 
 nav:
   - Home: index.md
+  - Dashboard: dashboard/index.md
   - Requirements:
       - Overview: requirements/overview.md
       - Data model: requirements/data/predation.md
@@ -13,6 +14,7 @@ nav:
       - System Overview: architecture.md
       - Implementation Roadmap: implementation-roadmap.md
   - Quality System:
+      - Dashboard Setup: QUALITY_DASHBOARD_SETUP.md
       - Guide: DOCS_SYSTEM_GUIDE.md
       - Standards: requirements.md
       - Testing Strategy: test-strategy.md
@@ -34,13 +36,20 @@ markdown_extensions:
   - md_in_html
   - tables
   - footnotes
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.highlight
   - pymdownx.inlinehilite
   - pymdownx.tabbed
 
 plugins:
   - search
+
+extra_javascript:
+  - https://unpkg.com/mermaid@10/dist/mermaid.min.js
 
 watch:
   - docs
