@@ -2,6 +2,7 @@
   "name": "pythagora-bios",
   "private": true,
   "version": "0.1.0",
+  "packageManager": "pnpm@10.32.1",
   "type": "module",
   "scripts": {
     "dev": "concurrently -k \"npm:worker:dev\" \"vite --config apps/frontend/vite.config.ts\"",

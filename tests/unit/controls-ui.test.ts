@@ -24,8 +24,8 @@ class FakeElement {
     for (const listener of bucket) listener();
   }
 
-  dispatchEvent(event: { type: string }): void {
-    this.dispatch(event.type);
+  dispatchEvent(event: Event | { type: string }): void {
+    this.dispatch((event as { type: string }).type);
   }
 }
 
@@ -88,9 +88,9 @@ describe('UI 操作', () => {
     new ControlsUI(root, send);
 
     // Act
-    root.querySelector('#reset')?.dispatchEvent({ type: 'click' });
-    root.querySelector('#add-herbivores')?.dispatchEvent({ type: 'click' });
-    root.querySelector('#add-carnivore')?.dispatchEvent({ type: 'click' });
+    (root.querySelector('#reset') as FakeElement | null)?.dispatchEvent({ type: 'click' } as Event);
+    (root.querySelector('#add-herbivores') as FakeElement | null)?.dispatchEvent({ type: 'click' } as Event);
+    (root.querySelector('#add-carnivore') as FakeElement | null)?.dispatchEvent({ type: 'click' } as Event);
 
     // Assert
     expect(send).toHaveBeenCalledWith({ type: 'reset' });
@@ -125,7 +125,7 @@ describe('UI 操作', () => {
     // Act
     queue.send({ type: 'update-config', key: 'maxGrass', value: 120 }, socket);
     queue.send({ type: 'spawn', species: Species.Herbivore, count: 10 }, socket);
-    socket.readyState = WebSocket.OPEN;
+    Object.defineProperty(socket, 'readyState', { value: WebSocket.OPEN, configurable: true });
     queue.flush(socket);
 
     // Assert
@@ -143,7 +143,7 @@ describe('UI 操作', () => {
     queue.send({ type: 'update-config', key: 'grassSpawnInterval', value: 0.5 }, socket);
     queue.send({ type: 'update-config', key: 'maxGrass', value: 150 }, socket);
     queue.send({ type: 'spawn', species: Species.Carnivore, count: 1 }, socket);
-    socket.readyState = WebSocket.OPEN;
+    Object.defineProperty(socket, 'readyState', { value: WebSocket.OPEN, configurable: true });
     queue.flush(socket);
 
     // Assert

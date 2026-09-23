@@ -36,13 +36,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: npm
+          cache: pnpm
 
       - name: Install validation dependencies
         run: |
+          corepack enable
+          pnpm install --frozen-lockfile
           python -m pip install --upgrade pip
           python -m pip install pyyaml mkdocs-material
-          npm install --save-dev markdownlint-cli2 textlint @textlint/markdown textlint-rule-terminology
+          pnpm add -D markdownlint-cli2 textlint @textlint/markdown textlint-rule-terminology
 
       - name: Validate requirement model
         run: python3 scripts/validate_requirements.py
@@ -51,10 +53,10 @@ jobs:
         run: python3 scripts/generate_traceability.py
 
       - name: Run markdown lint
-        run: npx markdownlint-cli2 "docs/**/*.md" "README.md"
+        run: pnpm exec markdownlint-cli2 "docs/**/*.md" "README.md"
 
       - name: Run text lint
-        run: npx textlint "docs/**/*.md" "README.md"
+        run: pnpm exec textlint "docs/**/*.md" "README.md"
 
       - name: Build MkDocs site
         run: mkdocs build --strict
