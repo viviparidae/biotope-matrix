@@ -27,7 +27,14 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run unit and architecture tests
-        run: pnpm exec vitest run src/architecture.fitness.test.ts tests/unit/predation.test.ts
+        run: |
+          set +e
+          mkdir -p .artifacts
+          pnpm exec vitest run src/architecture.fitness.test.ts tests/unit/predation.test.ts --reporter=json --outputFile=.artifacts/fitness-report.json
+          status=$?
+          node scripts/generate-test-report.mjs .artifacts/fitness-report.json site/reports/fitness-test-report.html
+          if [ -f site/reports/fitness-test-report.html ]; then echo "Fitness report: site/reports/fitness-test-report.html"; fi
+          exit $status
 
       - name: Run synthetic ecosystem transaction checks
         run: |
@@ -57,6 +64,15 @@ jobs:
         with:
           name: synthetic-ecosystem-metrics
           path: .artifacts/
+
+      - name: Upload fitness test report artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fitness-test-report
+          path: site/reports/fitness-test-report.html
+          if-no-files-found: ignore
+          retention-days: 7
 
       - name: Type check
         run: pnpm exec tsc --noEmit

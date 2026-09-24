@@ -9,6 +9,7 @@
     "worker:dev": "tsx apps/worker/src/index.ts",
     "build": "tsc --noEmit && vite build --config apps/frontend/vite.config.ts",
     "test": "vitest run tests/unit tests/integration",
+    "test:ci": "bash -lc 'set +e; mkdir -p .artifacts; vitest run tests/unit tests/integration --reporter=json --outputFile=.artifacts/vitest-report.json; status=$?; node scripts/generate-test-report.mjs .artifacts/vitest-report.json site/test-report.html; exit $status'",
     "test:unit": "vitest run tests/unit",
     "test:integration": "vitest run tests/integration",
     "test:acceptance": "vitest run tests/acceptance",

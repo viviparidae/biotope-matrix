@@ -51,7 +51,14 @@ jobs:
         run: pnpm exec tsc --noEmit
 
       - name: Fast unit test feedback
-        run: pnpm run test:unit
+        run: |
+          set +e
+          mkdir -p .artifacts
+          pnpm exec vitest run tests/unit --reporter=json --outputFile=.artifacts/unit-report.json
+          status=$?
+          node scripts/generate-test-report.mjs .artifacts/unit-report.json site/reports/unit-test-report.html
+          if [ -f site/reports/unit-test-report.html ]; then echo "Unit test report: site/reports/unit-test-report.html"; fi
+          exit $status
 
       - name: Build artifact once
         run: pnpm run build
@@ -63,6 +70,15 @@ jobs:
           path: dist/
           if-no-files-found: error
           retention-days: 1
+
+      - name: Upload unit test report artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-report
+          path: site/reports/unit-test-report.html
+          if-no-files-found: ignore
+          retention-days: 7
 
   acceptance-stage:
     name: Acceptance Stage (BDD / Gherkin)
@@ -167,12 +183,19 @@ jobs:
           name: fitness-report
           path: ./report-dist
 
+      - name: Download unit test report artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: unit-test-report
+          path: ./unit-test-report-dist
+
       - name: Prepare GitHub Pages bundle
         run: |
           mkdir -p ./pages
           if [ -d ./app-dist ]; then cp -R ./app-dist/. ./pages/; fi
           mkdir -p ./pages/reports/coverage
           if [ -d ./report-dist/coverage ]; then cp -R ./report-dist/coverage/. ./pages/reports/coverage/; fi
+          if [ -d ./unit-test-report-dist ]; then cp -R ./unit-test-report-dist/. ./pages/reports/; fi
 
           cat > ./pages/reports/index.html <<'HTML'
           <!doctype html>
@@ -188,6 +211,7 @@ jobs:
                 <ul>
                   <li><a href="../">Application</a></li>
                   <li><a href="coverage/">Coverage Report</a></li>
+                  <li><a href="unit-test-report.html">Unit Test Failure Report</a></li>
                 </ul>
               </main>
             </body>

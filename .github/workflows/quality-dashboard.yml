@@ -46,14 +46,30 @@ jobs:
       - name: Run quality checks and tests
         if: always()
         run: |
-          pnpm run test:unit -- --coverage || true
-          pnpm run test:integration || true
+          set +e
+          mkdir -p .artifacts site/reports
+          pnpm run test:unit -- --coverage --reporter=json --outputFile=.artifacts/unit-report.json || true
+          pnpm run test:integration -- --reporter=json --outputFile=.artifacts/integration-report.json || true
+          node scripts/generate-test-report.mjs .artifacts/unit-report.json site/reports/unit-test-report.html || true
+          node scripts/generate-test-report.mjs .artifacts/integration-report.json site/reports/integration-test-report.html || true
+          if [ -f site/reports/unit-test-report.html ]; then echo "Unit report available at site/reports/unit-test-report.html"; fi
+          if [ -f site/reports/integration-test-report.html ]; then echo "Integration report available at site/reports/integration-test-report.html"; fi
 
       - name: Generate quality metrics and dashboard markdown
         run: python3 scripts/generate_quality_report.py
 
       - name: Build MkDocs site
         run: mkdocs build -d site
+
+      - name: Publish test failure reports
+        if: always()
+        run: |
+          set +e
+          mkdir -p site/reports
+          node scripts/generate-test-report.mjs .artifacts/unit-report.json site/reports/unit-test-report.html || true
+          node scripts/generate-test-report.mjs .artifacts/integration-report.json site/reports/integration-test-report.html || true
+          if [ -f site/reports/unit-test-report.html ]; then echo "Unit report available at site/reports/unit-test-report.html"; fi
+          if [ -f site/reports/integration-test-report.html ]; then echo "Integration report available at site/reports/integration-test-report.html"; fi
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

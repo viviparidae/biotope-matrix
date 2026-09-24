@@ -192,8 +192,8 @@ export function enforcePopulationBoundsSystem(
     }
   }
 
-  const herbivoreSafetyCap = 150;
-  const carnivoreSafetyCap = 70;
+  const herbivoreSafetyCap = HERBIVORE_MAX_POPULATION;
+  const carnivoreSafetyCap = CARNIVORE_MAX_POPULATION;
 
   if (herbivores > herbivoreSafetyCap) {
     let excess = herbivores - herbivoreSafetyCap;
