@@ -14,22 +14,22 @@
 
 | レベル | 件数 | 構成比 | 通過状況 |
 | --- | ---: | ---: | --- |
-| Unit | 4 | 44.4% | 4 passed |
-| Integration | 2 | 22.2% | 2 passed |
-| Fitness / E2E | 3 | 33.3% | 3 passed |
+| Unit | 5 | 50.0% | 5 passed |
+| Integration | 2 | 20.0% | 2 passed |
+| Fitness / end-to-end | 3 | 30.0% | 3 passed |
 
 ```mermaid
 block-beta
     columns 3
     Unit["Unit
-4
-44.4%"]
+5
+50.0%"]
     Integration["Integration
 2
-22.2%"]
-    Fitness["Fitness/E2E
+20.0%"]
+    Fitness["Fitness/end-to-end
 3
-33.3%"]
+30.0%"]
 ```
 
 ## 品質トレンド
@@ -37,19 +37,19 @@ block-beta
 ```mermaid
 xychart-beta
     title "Coverage & requirement trend"
-    x-axis ["B1"]
+    x-axis ["B1", "B2"]
     y-axis "Percent (%)" 0 --> 100
-    line ["Coverage", 44.0]
-    line ["Requirement", 100.0]
+    line ["Coverage", 44.0, 44.0]
+    line ["Requirement", 100.0, 100.0]
 ```
 
 ```mermaid
 xychart-beta
     title "Static analysis and CI trend"
-    x-axis ["B1"]
+    x-axis ["B1", "B2"]
     y-axis "Issues / success rate" 0 --> 100
-    line ["Static issues", 0]
-    line ["CI success", 100.0]
+    line ["Static issues", 0, 0]
+    line ["CI success", 100.0, 100.0]
 ```
 
 ## リスクマトリクス

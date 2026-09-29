@@ -249,14 +249,14 @@ def build_dashboard_markdown(report_payload: dict[str, Any], history: list[dict[
 | --- | ---: | ---: | --- |
 | Unit | {pyramid.get('unit', {}).get('count', 0)} | {pyramid.get('unit', {}).get('pct', 0.0):.1f}% | {pyramid.get('unit', {}).get('passed', 0)} passed |
 | Integration | {pyramid.get('integration', {}).get('count', 0)} | {pyramid.get('integration', {}).get('pct', 0.0):.1f}% | {pyramid.get('integration', {}).get('passed', 0)} passed |
-| Fitness / E2E | {pyramid.get('fitness', {}).get('count', 0)} | {pyramid.get('fitness', {}).get('pct', 0.0):.1f}% | {pyramid.get('fitness', {}).get('passed', 0)} passed |
+| Fitness / end-to-end | {pyramid.get('fitness', {}).get('count', 0)} | {pyramid.get('fitness', {}).get('pct', 0.0):.1f}% | {pyramid.get('fitness', {}).get('passed', 0)} passed |
 
 ```mermaid
 block-beta
     columns 3
     Unit["Unit\n{pyramid.get('unit', {}).get('count', 0)}\n{pyramid.get('unit', {}).get('pct', 0.0):.1f}%"]
     Integration["Integration\n{pyramid.get('integration', {}).get('count', 0)}\n{pyramid.get('integration', {}).get('pct', 0.0):.1f}%"]
-    Fitness["Fitness/E2E\n{pyramid.get('fitness', {}).get('count', 0)}\n{pyramid.get('fitness', {}).get('pct', 0.0):.1f}%"]
+    Fitness["Fitness/end-to-end\n{pyramid.get('fitness', {}).get('count', 0)}\n{pyramid.get('fitness', {}).get('pct', 0.0):.1f}%"]
 ```
 
 ## 品質トレンド
