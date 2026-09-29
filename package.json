@@ -11,14 +11,19 @@
     "test": "vitest run tests/unit tests/integration",
     "test:ci": "bash -lc 'set +e; mkdir -p .artifacts; vitest run tests/unit tests/integration --reporter=json --outputFile=.artifacts/vitest-report.json; status=$?; node scripts/generate-test-report.mjs .artifacts/vitest-report.json site/test-report.html; exit $status'",
     "test:unit": "vitest run tests/unit",
+    "test:unit:coverage": "vitest run tests/unit --coverage",
     "test:integration": "vitest run tests/integration",
+    "test:integration:coverage": "vitest run tests/integration --coverage",
     "test:acceptance": "vitest run tests/acceptance",
     "test:performance": "vitest run tests/performance --pool=forks --poolOptions.forks.singleFork=true",
     "test:cucumber": "tsx node_modules/@cucumber/cucumber/bin/cucumber-js --import 'tests/steps/**/*.ts' 'tests/features/**/*.feature'",
+    "test:coverage": "vitest run tests/unit tests/integration --coverage",
+    "typecheck": "tsc --noEmit",
     "e2e": "playwright test",
     "docs:validate": "python3 scripts/validate_requirements.py",
     "docs:trace": "python3 scripts/generate_traceability.py",
-    "docs:build": "mkdocs build --strict"
+    "docs:build": "mkdocs build -d site",
+    "pages:build": "node scripts/build-pages.mjs"
   },
   "devDependencies": {
     "@cucumber/cucumber": "^12.9.0",

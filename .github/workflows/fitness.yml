@@ -5,9 +5,14 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
   quality-gates:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -26,37 +31,54 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Type check
+        run: pnpm run typecheck
+
       - name: Run unit and architecture tests
         run: |
           set +e
-          mkdir -p .artifacts
-          pnpm exec vitest run src/architecture.fitness.test.ts tests/unit/predation.test.ts --reporter=json --outputFile=.artifacts/fitness-report.json
+          mkdir -p .artifacts site/reports
+          pnpm exec vitest run \
+            src/architecture.fitness.test.ts \
+            tests/unit/predation.test.ts \
+            --reporter=json \
+            --outputFile=.artifacts/fitness-report.json
           status=$?
-          node scripts/generate-test-report.mjs .artifacts/fitness-report.json site/reports/fitness-test-report.html
-          if [ -f site/reports/fitness-test-report.html ]; then echo "Fitness report: site/reports/fitness-test-report.html"; fi
+          node scripts/generate-test-report.mjs \
+            .artifacts/fitness-report.json \
+            site/reports/fitness-test-report.html
+          if [ -f site/reports/fitness-test-report.html ]; then
+            echo "Fitness report: site/reports/fitness-test-report.html"
+          fi
           exit $status
 
       - name: Run synthetic ecosystem transaction checks
         run: |
           mkdir -p .artifacts
-          pnpm exec vitest run src/tests/syntheticTransaction.test.ts --reporter=json --outputFile=.artifacts/synthetic-results.json
+          pnpm exec vitest run src/tests/syntheticTransaction.test.ts \
+            --reporter=json \
+            --outputFile=.artifacts/synthetic-results.json
 
       - name: Validate ecological health metrics
         run: |
-          node - <<'NODE'
-          const fs = require('fs');
+          cat > /tmp/validate-metrics.mjs <<'EOF'
+          import { readFileSync, existsSync } from 'node:fs';
           const path = '.artifacts/synthetic-results.json';
-          if (!fs.existsSync(path)) {
+          if (!existsSync(path)) {
             console.error('Synthetic transaction metrics were not produced.');
             process.exit(1);
           }
-          const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+          const data = JSON.parse(readFileSync(path, 'utf8'));
           if ((data.numFailedTests ?? 0) > 0 || (data.numFailedTestSuites ?? 0) > 0) {
             console.error('Synthetic ecosystem checks failed.');
             process.exit(1);
           }
-          console.log('Synthetic ecosystem metrics validated:', JSON.stringify({ passed: data.numPassedTests, failed: data.numFailedTests }));
-          NODE
+          console.log('Synthetic ecosystem metrics validated:', JSON.stringify({
+            passed: data.numPassedTests,
+            failed: data.numFailedTests,
+          }));
+          EOF
+          node /tmp/validate-metrics.mjs
 
       - name: Upload synthetic metrics artifact
         if: always()
@@ -73,6 +95,3 @@ jobs:
           path: site/reports/fitness-test-report.html
           if-no-files-found: ignore
           retention-days: 7
-
-      - name: Type check
-        run: pnpm exec tsc --noEmit

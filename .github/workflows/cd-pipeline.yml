@@ -25,9 +25,9 @@ env:
 
 jobs:
   commit-stage:
-    name: Commit Stage (Lint, TypeCheck, Unit Tests, Build Once)
+    name: Commit Stage (TypeCheck, Unit Tests, Build Once)
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
 
     steps:
       - name: Checkout repository
@@ -48,19 +48,25 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Static verification (TypeScript)
-        run: pnpm exec tsc --noEmit
+        run: pnpm run typecheck
 
       - name: Fast unit test feedback
         run: |
           set +e
-          mkdir -p .artifacts
-          pnpm exec vitest run tests/unit --reporter=json --outputFile=.artifacts/unit-report.json
+          mkdir -p .artifacts site/reports
+          pnpm exec vitest run tests/unit \
+            --reporter=json \
+            --outputFile=.artifacts/unit-report.json
           status=$?
-          node scripts/generate-test-report.mjs .artifacts/unit-report.json site/reports/unit-test-report.html
-          if [ -f site/reports/unit-test-report.html ]; then echo "Unit test report: site/reports/unit-test-report.html"; fi
+          node scripts/generate-test-report.mjs \
+            .artifacts/unit-report.json \
+            site/reports/unit-test-report.html
+          if [ -f site/reports/unit-test-report.html ]; then
+            echo "Unit test report: site/reports/unit-test-report.html"
+          fi
           exit $status
 
-      - name: Build artifact once
+      - name: Build frontend artifact
         run: pnpm run build
 
       - name: Upload build artifact
@@ -108,18 +114,19 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build-artifact
-          path: ./site
+          path: ./dist
 
       - name: Run acceptance tests
-        run: |
-          pnpm run test:acceptance
-          pnpm run test:cucumber
+        run: pnpm run test:acceptance
+
+      - name: Run Cucumber BDD tests
+        run: pnpm run test:cucumber
 
   capacity-fitness-stage:
-    name: Capacity & Fitness Stage (60fps, Synthetic Transactions)
+    name: Capacity & Fitness Stage (Architecture, Synthetic Ecosystem)
     needs: acceptance-stage
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
 
     steps:
       - name: Checkout repository
@@ -139,21 +146,81 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run architecture fitness and synthetic ecosystem checks
+      - name: Run architecture fitness and unit+integration with coverage
         run: |
-          pnpm exec vitest run src/architecture.fitness.test.ts src/tests/syntheticTransaction.test.ts \
-            --coverage.enabled \
+          mkdir -p .artifacts site/reports
+          pnpm exec vitest run \
+            src/architecture.fitness.test.ts \
+            tests/unit \
+            tests/integration \
+            --coverage \
             --coverage.reporter=html \
             --coverage.reporter=text-summary \
-            --coverage.reporter=json-summary
-          pnpm run test:performance
+            --coverage.reporter=json-summary \
+            --coverage.reportsDirectory=coverage \
+            --reporter=json \
+            --outputFile=.artifacts/fitness-report.json
+
+      - name: Generate fitness HTML report
+        if: always()
+        run: |
+          node scripts/generate-test-report.mjs \
+            .artifacts/fitness-report.json \
+            site/reports/fitness-test-report.html || true
+
+      - name: Run synthetic ecosystem transaction checks
+        run: |
+          mkdir -p .artifacts
+          pnpm exec vitest run src/tests/syntheticTransaction.test.ts \
+            --reporter=json \
+            --outputFile=.artifacts/synthetic-results.json
+
+      - name: Validate ecological health metrics
+        run: |
+          node - <<'NODE'
+          import { readFileSync, existsSync } from 'node:fs';
+          const path = '.artifacts/synthetic-results.json';
+          if (!existsSync(path)) {
+            console.error('Synthetic transaction metrics were not produced.');
+            process.exit(1);
+          }
+          const data = JSON.parse(readFileSync(path, 'utf8'));
+          if ((data.numFailedTests ?? 0) > 0 || (data.numFailedTestSuites ?? 0) > 0) {
+            console.error('Synthetic ecosystem checks failed.');
+            process.exit(1);
+          }
+          console.log('Synthetic ecosystem metrics validated:', JSON.stringify({
+            passed: data.numPassedTests, failed: data.numFailedTests
+          }));
+          NODE
+
+      - name: Run performance tests
+        run: pnpm run test:performance
 
       - name: Publish fitness report artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: fitness-report
+          name: fitness-coverage-report
           path: coverage/
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Publish synthetic metrics artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: synthetic-ecosystem-metrics
+          path: .artifacts/
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Publish fitness HTML report artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fitness-test-report
+          path: site/reports/fitness-test-report.html
           if-no-files-found: ignore
           retention-days: 7
 
@@ -171,52 +238,113 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Download build artifact
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.32.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          pnpm install --frozen-lockfile
+          python -m pip install --upgrade pip
+          python -m pip install mkdocs-material pymdownx pyyaml
+
+      - name: Download fitness coverage report
         uses: actions/download-artifact@v4
         with:
-          name: build-artifact
-          path: ./app-dist
+          name: fitness-coverage-report
+          path: ./coverage
+        continue-on-error: true
 
-      - name: Download report artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: fitness-report
-          path: ./report-dist
-
-      - name: Download unit test report artifact
+      - name: Download unit test report
         uses: actions/download-artifact@v4
         with:
           name: unit-test-report
-          path: ./unit-test-report-dist
+          path: ./site/reports
+        continue-on-error: true
 
-      - name: Prepare GitHub Pages bundle
+      - name: Download fitness test report
+        uses: actions/download-artifact@v4
+        with:
+          name: fitness-test-report
+          path: ./site/reports
+        continue-on-error: true
+
+      - name: Generate quality metrics
+        run: python3 scripts/generate_quality_report.py
+
+      - name: Build MkDocs documentation site
+        run: mkdocs build -d site
+
+      - name: Integrate coverage and test reports into Pages bundle
         run: |
-          mkdir -p ./pages
-          if [ -d ./app-dist ]; then cp -R ./app-dist/. ./pages/; fi
-          mkdir -p ./pages/reports/coverage
-          if [ -d ./report-dist/coverage ]; then cp -R ./report-dist/coverage/. ./pages/reports/coverage/; fi
-          if [ -d ./unit-test-report-dist ]; then cp -R ./unit-test-report-dist/. ./pages/reports/; fi
+          mkdir -p site/reports/coverage
 
-          cat > ./pages/reports/index.html <<'HTML'
+          # Vitest coverage HTML report
+          if [ -d coverage ]; then
+            cp -R coverage/. site/reports/coverage/
+            echo "Coverage report integrated at site/reports/coverage/"
+          fi
+
+          # Reports navigation page
+          COVERAGE_LINK=""
+          UNIT_LINK=""
+          FITNESS_LINK=""
+          [ -f site/reports/coverage/index.html ] && \
+            COVERAGE_LINK='<li><a href="coverage/">📊 カバレッジレポート (HTML)</a></li>'
+          [ -f site/reports/unit-test-report.html ] && \
+            UNIT_LINK='<li><a href="unit-test-report.html">🧪 ユニットテストレポート</a></li>'
+          [ -f site/reports/fitness-test-report.html ] && \
+            FITNESS_LINK='<li><a href="fitness-test-report.html">⚡ フィットネス・アーキテクチャテストレポート</a></li>'
+
+          cat > site/reports/index.html <<HTML
           <!doctype html>
-          <html lang="en">
+          <html lang="ja">
             <head>
               <meta charset="utf-8">
               <meta name="viewport" content="width=device-width, initial-scale=1">
-              <title>CI Reports</title>
+              <title>CI Reports – Biotope Matrix</title>
+              <style>
+                :root { color-scheme: light dark; font-family: system-ui, sans-serif; }
+                body { margin: 0; background: #0f172a; color: #e2e8f0; }
+                main { max-width: 48rem; margin: 0 auto; padding: 2rem 1rem 4rem; }
+                h1 { font-size: 1.75rem; }
+                .badge { padding: 0.2rem 0.6rem; border-radius: 999px;
+                         background: rgba(34,197,94,0.15); color: #22c55e;
+                         font-size: 0.75rem; font-weight: 700; margin-left: 0.5rem; }
+                ul { list-style: none; padding: 0; margin: 1.5rem 0; }
+                li { margin: 0.75rem 0; }
+                a { color: #60a5fa; text-decoration: none; font-size: 1.05rem; }
+                a:hover { text-decoration: underline; }
+                .back { margin-top: 2rem; border-top: 1px solid #334155; padding-top: 1rem; }
+              </style>
             </head>
             <body>
-              <main style="font-family: sans-serif; max-width: 48rem; margin: 2rem auto; padding: 0 1rem;">
-                <h1>CI Reports</h1>
+              <main>
+                <h1>CI Reports <span class="badge">GitHub Pages</span></h1>
+                <p>最新 CI ビルドのテスト結果とカバレッジをブラウザで確認できます。</p>
                 <ul>
-                  <li><a href="../">Application</a></li>
-                  <li><a href="coverage/">Coverage Report</a></li>
-                  <li><a href="unit-test-report.html">Unit Test Failure Report</a></li>
+                  ${COVERAGE_LINK}
+                  ${UNIT_LINK}
+                  ${FITNESS_LINK}
                 </ul>
+                <div class="back"><a href="../">← ドキュメントトップへ戻る</a></div>
               </main>
             </body>
           </html>
           HTML
+          echo "Reports index generated."
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
@@ -224,7 +352,7 @@ jobs:
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./pages
+          path: ./site
 
       - name: Deploy to GitHub Pages
         id: deployment
