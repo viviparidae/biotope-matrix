@@ -172,12 +172,13 @@ jobs:
         run: |
           mkdir -p .artifacts
           pnpm exec vitest run src/tests/syntheticTransaction.test.ts \
+            --reporter=default \
             --reporter=json \
             --outputFile=.artifacts/synthetic-results.json
 
       - name: Validate ecological health metrics
         run: |
-          node - <<'NODE'
+          cat > /tmp/validate-metrics.mjs <<'EOF'
           import { readFileSync, existsSync } from 'node:fs';
           const path = '.artifacts/synthetic-results.json';
           if (!existsSync(path)) {
@@ -192,7 +193,8 @@ jobs:
           console.log('Synthetic ecosystem metrics validated:', JSON.stringify({
             passed: data.numPassedTests, failed: data.numFailedTests
           }));
-          NODE
+          EOF
+          node /tmp/validate-metrics.mjs
 
       - name: Run performance tests
         run: pnpm run test:performance
