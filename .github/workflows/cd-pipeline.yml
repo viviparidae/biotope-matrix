@@ -258,7 +258,7 @@ jobs:
         run: |
           pnpm install --frozen-lockfile
           python -m pip install --upgrade pip
-          python -m pip install mkdocs-material pymdownx pyyaml
+          python -m pip install mkdocs-material pyyaml
 
       - name: Download fitness coverage report
         uses: actions/download-artifact@v4
