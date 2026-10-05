@@ -16,6 +16,7 @@ nav:
   - Quality System:
       - Dashboard Setup: QUALITY_DASHBOARD_SETUP.md
       - Guide: DOCS_SYSTEM_GUIDE.md
+      - Pages Deployment Policy: PAGES_DEPLOYMENT_POLICY.md
       - Standards: requirements.md
       - Testing Strategy: test-strategy.md
       - Coding Standards: coding-standards.md

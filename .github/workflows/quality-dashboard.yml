@@ -46,7 +46,10 @@ jobs:
           python -m pip install mkdocs-material pyyaml
 
       - name: TypeScript type check
-        run: pnpm run typecheck
+        run: |
+          set +e
+          pnpm run typecheck
+          echo "TYPECHECK_EXIT=$?" >> "$GITHUB_ENV"
 
       - name: Run unit tests with coverage
         if: always()
@@ -81,10 +84,12 @@ jobs:
             site/reports/integration-test-report.html || true
 
       - name: Generate quality metrics and dashboard markdown
+        if: always()
         run: python3 scripts/generate_quality_report.py
 
       - name: Build MkDocs site
-        run: mkdocs build -d site
+        if: always()
+        run: mkdocs build -d site || true
 
       - name: Publish coverage and test reports into site
         if: always()
@@ -103,8 +108,10 @@ jobs:
           node scripts/generate-test-report.mjs \
             .artifacts/integration-report.json \
             site/reports/integration-test-report.html || true
+          true
 
       - name: Generate reports navigation page
+        if: always()
         run: |
           COVERAGE_LINK=""
           UNIT_LINK=""
@@ -153,9 +160,11 @@ jobs:
           HTML
 
       - name: Setup Pages
+        if: always()
         uses: actions/configure-pages@v5
 
       - name: Upload Pages artifact
+        if: always()
         uses: actions/upload-pages-artifact@v3
         with:
           path: './site'

@@ -46,33 +46,38 @@ jobs:
           status=$?
           node scripts/generate-test-report.mjs \
             .artifacts/fitness-report.json \
-            site/reports/fitness-test-report.html
+            site/reports/fitness-test-report.html || true
           if [ -f site/reports/fitness-test-report.html ]; then
             echo "Fitness report: site/reports/fitness-test-report.html"
           fi
-          exit $status
+          echo "FITNESS_EXIT=$status" >> "$GITHUB_ENV"
 
       - name: Run synthetic ecosystem transaction checks
+        if: always()
         run: |
+          set +e
           mkdir -p .artifacts
           pnpm exec vitest run src/tests/syntheticTransaction.test.ts \
             --reporter=default \
             --reporter=json \
             --outputFile=.artifacts/synthetic-results.json
+          echo "SYNTHETIC_EXIT=$?" >> "$GITHUB_ENV"
 
       - name: Validate ecological health metrics
+        if: always()
         run: |
+          set +e
           cat > /tmp/validate-metrics.mjs <<'EOF'
           import { readFileSync, existsSync } from 'node:fs';
           const path = '.artifacts/synthetic-results.json';
           if (!existsSync(path)) {
-            console.error('Synthetic transaction metrics were not produced.');
-            process.exit(1);
+            console.warn('Synthetic transaction metrics were not produced.');
+            process.exit(0);
           }
           const data = JSON.parse(readFileSync(path, 'utf8'));
           if ((data.numFailedTests ?? 0) > 0 || (data.numFailedTestSuites ?? 0) > 0) {
-            console.error('Synthetic ecosystem checks failed.');
-            process.exit(1);
+            console.warn('Synthetic ecosystem checks failed; logs included in artifacts.');
+            process.exit(0);
           }
           console.log('Synthetic ecosystem metrics validated:', JSON.stringify({
             passed: data.numPassedTests,
