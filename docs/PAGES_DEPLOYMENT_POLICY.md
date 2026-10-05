@@ -32,7 +32,8 @@
   - ✅ 適合度テスト・カバレッジレポート
   - ✅ シンセティックエコシステムテストレポート
 
-**発行条件**: 
+**発行条件**:
+
 - `acceptance-stage` 失敗時: `capacity-fitness-stage` は実行されず、`deploy-stage` も実行されない（ブランチ保護）
 - `capacity-fitness-stage` 失敗時: `deploy-stage` は実行されるが、失敗状態のレポートを含める
 - `deploy-stage` 内ステップ失敗時: その時点までのレポートを集約し、Pages 発行まで続行
@@ -153,7 +154,7 @@ MkDocs ビルド失敗は Pages デプロイを阻止せず、既存サイトコ
 
 ### 4.1 アクセスポイント
 
-```
+```text
 https://viviparidae.github.io/biotope-matrix/
   ├─ (MkDocs ドキュメント)
   └─ /reports/
@@ -176,13 +177,14 @@ https://viviparidae.github.io/biotope-matrix/
 ### 5.1 SKILL.md との分岐
 
 | 判定軸 | CD パイプラインゲート | Pages 発行ゲート |
-|------|-------------------|-------------|
-| TypeScript 型チェック失敗 | ❌ commit-stage 停止 | ✅ Pages 発行（失敗状態）|
-| ユニットテスト失敗 | ❌ commit-stage 停止 | ✅ Pages 発行（失敗状態）|
+| --- | --- | --- |
+| TypeScript 型チェック失敗 | ❌ commit-stage 停止 | ✅ Pages 発行（失敗状態） |
+| ユニットテスト失敗 | ❌ commit-stage 停止 | ✅ Pages 発行（失敗状態） |
 | 受入テスト失敗 | ❌ acceptance-stage 停止 → deploy-stage 不実行 | ❌ Pages 発行されない |
-| 適合度テスト失敗 | ⚠️ 情報提供（非ブロック） | ✅ Pages 発行（失敗状態）|
+| 適合度テスト失敗 | ⚠️ 情報提供（非ブロック） | ✅ Pages 発行（失敗状態） |
 
 **要点**:
+
 - **コミット・受入ゲート**: 品質確保のため必須（SKILL.md 遵守）
 - **Pages ゲート**: 失敗状態のレポートも「結果の可視化」として発行
 
@@ -204,6 +206,7 @@ https://viviparidae.github.io/biotope-matrix/
 **原因**: `upload-pages-artifact` または `deploy-pages` がエラーで停止した
 
 **確認**:
+
 1. GitHub Actions ログで最後のステップを確認
 2. `site/` ディレクトリが存在・非空であることを確認（`ls -la .github/workflows/.../artifacts/`）
 3. Repository Settings → Pages: Source が "GitHub Actions" に設定されているか確認
@@ -239,6 +242,7 @@ ls -la scripts/generate-test-report.mjs
 **原因**: 大量のカバレッジレポート（数 MB）を転送中
 
 **対策**:
+
 - `retention-days` を短縮（`cleanup-artifact` で自動削除）
 - `site/reports/coverage/` のサイズを制限（圧縮 or 要約表示）
 
